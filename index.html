@@ -30,7 +30,7 @@ table.grid th{background:var(--usat-blue);color:#fff;font-family:var(--font-head
 table.grid td{border:1px solid var(--usat-gray-border);vertical-align:top;padding:0}
 td.time{background:var(--usat-blue-tint);color:var(--usat-blue);font-weight:bold;font-size:.8rem;text-align:center;padding:10px 6px;white-space:nowrap;width:130px;vertical-align:middle}
 td.band{background:var(--usat-gray-light);font-weight:bold;text-align:center;padding:10px;font-size:.85rem;vertical-align:middle}
-td.keynote{background:var(--usat-blue-dark);color:#fff;font-weight:bold;text-align:center;padding:12px;font-size:.9rem;vertical-align:middle}
+td.keynote{background:var(--usat-blue-dark);color:#fff;font-weight:bold;text-align:center;padding:12px;font-size:.9rem;vertical-align:middle;height:60px}
 td.slotcell{width:23%;background:#fff}
 .open-slot{padding:14px 10px;text-align:center;color:var(--usat-gray-mid);font-size:.8rem}
 .open-slot .badge{opacity:.55}
@@ -57,7 +57,13 @@ td.slotcell{width:23%;background:#fff}
 .pool h3{font-family:var(--font-heading);color:var(--usat-blue);font-size:.95rem;margin-bottom:4px}
 .pool .hint{font-size:.78rem;color:var(--usat-gray-mid);margin-bottom:12px}
 .pool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.pool .card{border:1px solid var(--usat-gray-border);border-radius:4px;background:#fff}
+.pool .card{border:1px solid var(--usat-gray-border);border-radius:4px}
+.card.track-coach{background:#E9F0F8}
+.card.track-rd{background:#E6F3E8}
+td.slotcell{padding:0}
+td.slotcell .card{height:100%}
+.legend{display:flex;gap:18px;justify-content:center;margin:14px 0 4px;font-size:.8rem;color:var(--usat-gray-mid)}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--usat-gray-border);vertical-align:-2px;margin-right:5px}
 .count-pill{display:inline-block;background:var(--usat-blue);color:#fff;font-size:.7rem;padding:2px 9px;border-radius:10px;margin-left:8px;vertical-align:middle}
 footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:center;font-size:.75rem;padding:16px;margin-top:30px}
 @media print{.dl-btn{display:none}}
@@ -68,6 +74,7 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
   <h1>USA TRIATHLON &nbsp;|&nbsp; ENDURANCE EXCHANGE 2027</h1>
   <div class="sub">Where Innovation Meets Endurance &nbsp;•&nbsp; January 8–10, 2027 &nbsp;•&nbsp; Caribe Royale Orlando &nbsp;•&nbsp; Session Planning Grid</div>
 </header>
+<div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span></div>
 <div class="container" id="app"></div>
 <footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
 
@@ -78,7 +85,7 @@ const DAY_META = {"1": {"date": "Friday, January 8", "theme": "Day 1 — Innovat
 const SESSIONS = [
  {
   "day": 1,
-  "slot": "1a",
+  "slot": null,
   "title": "The Time-Smart Coach: Apps, AI, and Systems That Make You a Better Coach in Half the Hours",
   "speaker": "Michelle Lake",
   "org": "The Dream Programs / Fiv3 Racing",
@@ -90,11 +97,12 @@ const SESSIONS = [
    "Give more consistent feedback because you have a process, not because you found more hours.",
    "Get your plan-writing dialed and organized so it works like the business it was meant to be."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
-  "slot": "2a",
+  "slot": null,
   "title": "Coach Smarter: Leveraging AI for Athlete Communication, Feedback, and Data Analysis",
   "speaker": "Julie Dunkle",
   "org": "NYX Endurance",
@@ -107,7 +115,8 @@ const SESSIONS = [
    "Keep the coach-athlete relationship authentic while automating the busywork.",
    "Build a framework for adding AI to your practice no matter your roster size or experience."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -124,7 +133,8 @@ const SESSIONS = [
    "Find efficiency gains that don't cost you coaching judgment or athlete relationships.",
    "Understand which parts of coaching stay uniquely human as the tech evolves."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -139,7 +149,8 @@ const SESSIONS = [
    "Use AI to interpret multi-variable athlete data and generate coaching hypotheses.",
    "Apply a clear framework for turning data insights into individual conversations and training decisions."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -155,7 +166,8 @@ const SESSIONS = [
    "Decide when to use a technology based on athlete needs, goals, and the tool's limits.",
    "Join a lively, hands-on debate with experienced coaches."
   ],
-  "notes": "Needs at least one co-presenter; presenter offered to help identify one or moderate."
+  "notes": "Needs at least one co-presenter; presenter offered to help identify one or moderate.",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -172,7 +184,8 @@ const SESSIONS = [
    "Learn what technostress and orthosomnia are and how they show up.",
    "Build body awareness so athletes don't over-rely on their devices."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -189,7 +202,8 @@ const SESSIONS = [
    "Use advanced tools to manage detailed athlete info and season planning.",
    "Build an implementation plan that fits how you actually work."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -204,7 +218,8 @@ const SESSIONS = [
    "Generate hyper-targeted, context-aware outreach based on an athlete's milestones.",
    "Scale your business in less time without losing the personal touch."
   ],
-  "notes": "Presenter notes the system is still in development and will be ready before August 2026."
+  "notes": "Presenter notes the system is still in development and will be ready before August 2026.",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -220,7 +235,8 @@ const SESSIONS = [
    "Use lactate data to set an athlete's training zones.",
    "See how specialized software builds a complete physiological profile."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -235,7 +251,8 @@ const SESSIONS = [
    "Understand the science and benefits of regular sauna use in training.",
    "Apply new strength-training technology to triathlon."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -250,7 +267,8 @@ const SESSIONS = [
    "Be ready for well-informed discussions on common topics.",
    "Expand your own grasp of the tech and equipment questions athletes raise."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -265,7 +283,8 @@ const SESSIONS = [
    "Walk away with a concrete list of ideas to make events more memorable.",
    "Understand how creative formats can grow participation locally."
   ],
-  "notes": "Race Director track. Harlow also submitted a coaching session (see Day Two)."
+  "notes": "Race Director track. Harlow also submitted a coaching session (see Day Two).",
+  "track": "rd"
  },
  {
   "day": 1,
@@ -282,7 +301,8 @@ const SESSIONS = [
    "Translate test results into practical decisions based on history, fitness, limiters, and event demands.",
    "Know the appropriate uses and limits of testing software and automated analysis."
   ],
-  "notes": "Presenter notes this is applied and approachable, not a product demo; LabWerx OS is used only as a practical example."
+  "notes": "Presenter notes this is applied and approachable, not a product demo; LabWerx OS is used only as a practical example.",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -299,7 +319,8 @@ const SESSIONS = [
    "Take away a repeatable framework for analyzing swim data.",
    "Optionally collaborate on case studies in a hands-on CEU workshop."
   ],
-  "notes": "Advanced audience. Delivered in partnership with EO; an optional follow-on CEU workshop is available."
+  "notes": "Advanced audience. Delivered in partnership with EO; an optional follow-on CEU workshop is available.",
+  "track": "coach"
  },
  {
   "day": 1,
@@ -315,7 +336,8 @@ const SESSIONS = [
    "Connect sponsorship, marketing, operations, service, and finance through shared context while keeping human decision rights.",
    "Recognize the AI confidence trap and use source checks, opposing arguments, and human approval before acting."
   ],
-  "notes": "Race Director track. Designed as a 40–50 minute concurrent session for race directors and endurance-industry professionals."
+  "notes": "Race Director track. Designed as a 40–50 minute concurrent session for race directors and endurance-industry professionals.",
+  "track": "rd"
  },
  {
   "day": 1,
@@ -332,7 +354,8 @@ const SESSIONS = [
    "Take reasonable steps to protect athlete data.",
    "Remember AI won't provide empathy, so that stays with you."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -345,7 +368,8 @@ const SESSIONS = [
   "takeaways": [
    "Build a stronger desire and ability to connect with, motivate, and impact your athletes."
   ],
-  "notes": "Presenter is open to presenting on other topics if there are gaps to fill."
+  "notes": "Presenter is open to presenting on other topics if there are gaps to fill.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -362,7 +386,8 @@ const SESSIONS = [
    "Stop carrying athlete outcomes as your own without losing investment in them.",
    "Audit your own coaching culture for grind behaviors and their downstream cost."
   ],
-  "notes": "Co-presented; this proposal was submitted by both presenters."
+  "notes": "Co-presented; this proposal was submitted by both presenters.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -379,7 +404,8 @@ const SESSIONS = [
    "Help athletes work through fear, setbacks, self-doubt, and life stress.",
    "Recognize when an athlete needs support versus accountability."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -392,7 +418,8 @@ const SESSIONS = [
   "takeaways": [
    "Concrete steps to improve communication in person, on the phone, and through TrainingPeaks."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -409,7 +436,8 @@ const SESSIONS = [
    "Build communication that earns trust and long-term buy-in.",
    "Help athletes keep their identity, confidence, and enjoyment beyond race results."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -426,7 +454,8 @@ const SESSIONS = [
    "Communication approaches for emotionally intelligent coaching.",
    "Ways to support athletes beyond race outcomes."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -443,7 +472,8 @@ const SESSIONS = [
    "Create athlete identity and belonging.",
    "Coach through setbacks, burnout, and life changes."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -458,7 +488,8 @@ const SESSIONS = [
    "The impact of team culture.",
    "Building trust and building community."
   ],
-  "notes": "Drawn from rebuilding the CMU tri team's culture; presenter is open to other topics if needed."
+  "notes": "Drawn from rebuilding the CMU tri team's culture; presenter is open to other topics if needed.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -474,7 +505,8 @@ const SESSIONS = [
    "Case-study templates illustrating each tier in a real coaching context.",
    "Language tools for raising load concerns proactively and without judgment."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -490,7 +522,8 @@ const SESSIONS = [
    "How four behavior styles show up in coaching.",
    "How to flex your style to communicate with different athletes."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -503,7 +536,8 @@ const SESSIONS = [
   "takeaways": [
    "Adopt the fighter pilot's brief-train-execute-debrief cycle in your coaching to reach your next level of success."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -520,7 +554,8 @@ const SESSIONS = [
    "Use the interplay of power/pace, HR, and RPE to gauge fitness and set race targets.",
    "Build knowledge progressively and confirm understanding over time."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -535,7 +570,8 @@ const SESSIONS = [
    "Run an onboarding conversation that aligns the coach's why with the athlete's why.",
    "Use structured digital ecosystems for continuous, premium communication without drowning in admin."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -552,7 +588,8 @@ const SESSIONS = [
    "Community and culture are often the biggest differentiators.",
    "Support athletes through changing life seasons, goals, and motivation."
   ],
-  "notes": "Presenter's average athlete stays on the roster three to five years."
+  "notes": "Presenter's average athlete stays on the roster three to five years.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -569,7 +606,8 @@ const SESSIONS = [
    "Build flexibility and support for different athlete levels.",
    "Teach athletes to support each other."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -584,7 +622,8 @@ const SESSIONS = [
    "Select and apply autoregulatory tools like RPE, velocity-based training, and readiness monitoring.",
    "Design a periodized annual plan that sequences strength alongside endurance so the two complement each other."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -601,7 +640,8 @@ const SESSIONS = [
    "Injury reduction, durability, and exercise selection for triathletes.",
    "Building sustainable athlete buy-in."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -618,7 +658,8 @@ const SESSIONS = [
    "Integrate strength and mobility without compromising aerobic development.",
    "Grasp \"durability\" and how it drives consistency and injury prevention."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -633,7 +674,8 @@ const SESSIONS = [
    "Safely create and control indoor heat training sessions.",
    "Use passive heat training to boost adaptation, recovery, and sleep."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -650,7 +692,8 @@ const SESSIONS = [
    "Handle competing during menstruation.",
    "Communicate well in female-athlete coaching."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -667,7 +710,8 @@ const SESSIONS = [
    "Mitigate soft-tissue injury and use recovery metrics to guide decisions.",
    "Support hormonal health, energy availability, and motivation through transition."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -683,7 +727,8 @@ const SESSIONS = [
    "Look at metabolic cost of running and leg-spring stiffness.",
    "Improve mechanics, durability, and off-bike performance."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -699,7 +744,8 @@ const SESSIONS = [
    "Coaches are always learning, and athletes aren't guinea pigs.",
    "The coaching process holds up regardless of the sport."
   ],
-  "notes": "This presenter submitted two related proposals under the same title."
+  "notes": "This presenter submitted two related proposals under the same title.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -712,7 +758,8 @@ const SESSIONS = [
   "takeaways": [
    "Direction to be confirmed once a topic is selected."
   ],
-  "notes": "Presenter offered several ideas and is open to presenting on almost anything."
+  "notes": "Presenter offered several ideas and is open to presenting on almost anything.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -729,7 +776,8 @@ const SESSIONS = [
    "Build onboarding and community systems that absorb new athletes without quality dropping.",
    "Develop the CEO mindset that holds the whole business together."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -746,7 +794,8 @@ const SESSIONS = [
    "Treat athlete experience as central to retention and word of mouth.",
    "Apply affordable, scalable tactics that work for races of any size."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "rd"
  },
  {
   "day": 3,
@@ -763,7 +812,8 @@ const SESSIONS = [
    "Lowering barriers attracts first-timers and improves retention.",
    "Smaller races thrive by leaning into authenticity and local culture."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "rd"
  },
  {
   "day": 3,
@@ -776,7 +826,8 @@ const SESSIONS = [
   "takeaways": [
    "A coaching and business framework for bringing beginners into triathlon."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -791,7 +842,8 @@ const SESSIONS = [
    "What creates and strengthens community.",
    "How to keep community inclusive for new, diverse, and advanced athletes alike, and not clicky."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -804,7 +856,8 @@ const SESSIONS = [
   "takeaways": [
    "Direction to be confirmed."
   ],
-  "notes": "Topic still being finalized with the presenter."
+  "notes": "Topic still being finalized with the presenter.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -819,7 +872,8 @@ const SESSIONS = [
    "See how welcoming and supporting new athletes builds the future of the sport.",
    "Take away a proven framework for guiding newcomers from curiosity to the finish line."
   ],
-  "notes": "Presenter would like to co-present with her husband, Evan Malone, co-race director and longtime triathlete."
+  "notes": "Presenter would like to co-present with her husband, Evan Malone, co-race director and longtime triathlete.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -835,7 +889,8 @@ const SESSIONS = [
    "The operating guidelines that support elite programs.",
    "An honest look at what it actually takes."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -852,7 +907,8 @@ const SESSIONS = [
    "Adapt your style to different ages and personalities.",
    "Handle difficult conversations with professionalism."
   ],
-  "notes": "Presenter can add small-group discussion if the time slot allows."
+  "notes": "Presenter can add small-group discussion if the time slot allows.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -868,7 +924,8 @@ const SESSIONS = [
    "Adapt your check-in approach to your experience level and the depth of the relationship.",
    "Consider how to stay present, or hand off responsibly, when the crisis is the coach's own."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -885,7 +942,8 @@ const SESSIONS = [
    "Practice foundational flow rope patterns in a hands-on setting.",
    "Apply flow rope drills to warm-ups, mobility work, and nervous system prep."
   ],
-  "notes": "Presenter can run a lecture plus an optional morning hands-on flow rope session and can provide ropes."
+  "notes": "Presenter can run a lecture plus an optional morning hands-on flow rope session and can provide ropes.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -901,7 +959,8 @@ const SESSIONS = [
    "Identify strategies that foster psychological safety, trust, belonging, and resilience.",
    "Apply brain-based communication: intentional language, relationship-building, and nervous system regulation."
   ],
-  "notes": "Co-presented with Alyssa Channin, Program Director at i-tri."
+  "notes": "Co-presented with Alyssa Channin, Program Director at i-tri.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -917,7 +976,8 @@ const SESSIONS = [
    "Implement a simple outreach and relationship-maintenance system that replaces random networking.",
    "Leave with a mapping worksheet and a scripted outreach approach."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -933,7 +993,8 @@ const SESSIONS = [
    "Follow the development pathway: ADT, juniors, U23, talent ID, and elite racing.",
    "Leave with concrete steps to get involved and create local opportunities for paratriathletes."
   ],
-  "notes": "Format still being finalized with USAT High Performance. A chance to showcase athletes and align messaging for LA2028."
+  "notes": "Format still being finalized with USAT High Performance. A chance to showcase athletes and align messaging for LA2028.",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -949,7 +1010,8 @@ const SESSIONS = [
    "Find the efficiency leaks (technique, drag, fueling, race choice) that lower life-cost without lowering performance.",
    "Coach athletes who stay a decade and become the culture of a squad rather than its turnover."
   ],
-  "notes": ""
+  "notes": "",
+  "track": "coach"
  },
  {
   "day": 3,
@@ -965,7 +1027,8 @@ const SESSIONS = [
    "Learn how barriers, physical, intellectual, and societal, were overcome.",
    "Hear the coaching principles Nik used, straight from the coach himself."
   ],
-  "notes": "A marquee keynote and a strong fit for the human-connection theme, with a natural tie to growing the sport for all athletes."
+  "notes": "A marquee keynote and a strong fit for the human-connection theme, with a natural tie to growing the sport for all athletes.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -981,7 +1044,8 @@ const SESSIONS = [
    "Improve communication with athletes and parents.",
    "Introduce high-performance concepts without raising burnout risk."
   ],
-  "notes": "Youth pipeline content supports LA2028 growth, but placed on Day Two to keep Sunday lean."
+  "notes": "Youth pipeline content supports LA2028 growth, but placed on Day Two to keep Sunday lean.",
+  "track": "coach"
  },
  {
   "day": 2,
@@ -997,7 +1061,8 @@ const SESSIONS = [
    "Compare the research with how popular media frames it.",
    "Enhance the high-impact leadership practices already embedded in sport."
   ],
-  "notes": "Leadership and human development; better suited to Day Two than the Road to LA2028 day."
+  "notes": "Leadership and human development; better suited to Day Two than the Road to LA2028 day.",
+  "track": "coach"
  },
  {
   "day": "tbd",
@@ -1012,7 +1077,8 @@ const SESSIONS = [
    "Race-day incident response.",
    "A scenario-based tabletop exercise to work through real situations."
   ],
-  "notes": "Race-director safety content. Doesn't map cleanly to the three coach-facing day themes; worth a dedicated RD block."
+  "notes": "Race-director safety content. Doesn't map cleanly to the three coach-facing day themes; worth a dedicated RD block.",
+  "track": "rd"
  }
 ];
 
@@ -1022,7 +1088,7 @@ function findSession(slot){ return SESSIONS.find(s=>s.slot===slot); }
 
 function cardHTML(s, idx, showSlot){
   const badge = s.slot ? `<span class="badge">${esc(s.slot.toUpperCase())}</span>` : "";
-  return `<div class="card" id="card-${idx}">
+  return `<div class="card track-${s.track}" id="card-${idx}">
     ${showSlot?badge:""}
     <div class="title" onclick="toggle(${idx})">${esc(s.title)}</div>
     <div class="speaker"><b>${esc(s.speaker)}</b>${s.org?" · "+esc(s.org):""}</div>
