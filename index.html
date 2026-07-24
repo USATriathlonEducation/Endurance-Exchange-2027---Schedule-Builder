@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endurance Exchange 2027 — Session Planning Grid</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --usat-red:#A80C34; --usat-blue:#002A5C; --usat-blue-dark:#001F47;
+  --usat-white:#FFFFFF; --usat-gray-dark:#1A1A1A; --usat-gray-mid:#4A4A4A;
+  --usat-gray-light:#F2F2F2; --usat-gray-border:#CCCCCC;
+  --usat-red-tint:#F5E0E5; --usat-blue-tint:#E6EAF0;
+  --font-heading:"Univers Black","Arial Black",Impact,sans-serif;
+  --font-body:"Univers Roman",Arial,Helvetica,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);color:var(--usat-gray-dark);background:#fff;font-size:15px}
+header{background:var(--usat-blue);color:#fff;padding:28px 24px;text-align:center}
+header h1{font-family:var(--font-heading);font-size:1.9rem;letter-spacing:.5px}
+header .sub{margin-top:6px;font-size:.9rem;color:rgba(255,255,255,.85);font-style:italic}
+.container{max-width:1500px;margin:0 auto;padding:24px}
+.day-block{margin-bottom:44px}
+.day-header{background:var(--usat-red);color:#fff;padding:12px 18px;border-radius:4px 4px 0 0}
+.day-header h2{font-family:var(--font-heading);font-size:1.15rem}
+.day-header .theme{font-size:.85rem;color:rgba(255,255,255,.9);margin-top:2px}
+.grid-scroll{overflow-x:auto;border:1px solid var(--usat-gray-border);border-top:none}
+table.grid{border-collapse:collapse;width:100%;min-width:1100px}
+table.grid th{background:var(--usat-blue);color:#fff;font-family:var(--font-heading);font-weight:normal;font-size:.8rem;padding:10px 8px;border:1px solid var(--usat-gray-border)}
+table.grid td{border:1px solid var(--usat-gray-border);vertical-align:top;padding:0}
+td.time{background:var(--usat-blue-tint);color:var(--usat-blue);font-weight:bold;font-size:.8rem;text-align:center;padding:10px 6px;white-space:nowrap;width:130px;vertical-align:middle}
+td.band{background:var(--usat-gray-light);font-weight:bold;text-align:center;padding:10px;font-size:.85rem;vertical-align:middle}
+td.keynote{background:var(--usat-blue-dark);color:#fff;font-weight:bold;text-align:center;padding:12px;font-size:.9rem;vertical-align:middle}
+td.slotcell{width:23%;background:#fff}
+.open-slot{padding:14px 10px;text-align:center;color:var(--usat-gray-mid);font-size:.8rem}
+.open-slot .badge{opacity:.55}
+.badge{display:inline-block;background:var(--usat-red);color:#fff;font-family:var(--font-heading);font-size:.7rem;padding:2px 8px;border-radius:3px;letter-spacing:.5px}
+.card{padding:10px}
+.card .title{font-weight:bold;color:var(--usat-blue);font-size:.85rem;line-height:1.3;margin:6px 0 4px;cursor:pointer}
+.card .title:hover{text-decoration:underline}
+.card .speaker{font-size:.78rem;color:var(--usat-gray-mid)}
+.card .speaker b{color:var(--usat-gray-dark)}
+.card .fmt{display:inline-block;font-size:.68rem;color:var(--usat-blue);background:var(--usat-blue-tint);padding:1px 6px;border-radius:3px;margin-top:5px}
+.acc-toggle{display:inline-block;margin-top:8px;font-size:.72rem;color:var(--usat-blue);cursor:pointer;font-weight:bold}
+.acc-toggle::before{content:"▸ ";transition:.15s}
+.card.open .acc-toggle::before{content:"▾ "}
+.acc-body{display:none;margin-top:8px;border-top:1px solid var(--usat-gray-border);padding-top:8px;font-size:.78rem}
+.card.open .acc-body{display:block}
+.acc-body h5{font-family:var(--font-heading);font-size:.72rem;color:var(--usat-red);margin:8px 0 4px;text-transform:uppercase;letter-spacing:.5px}
+.acc-body p{line-height:1.45;margin-bottom:4px}
+.acc-body ul{padding-left:16px;line-height:1.45}
+.acc-body li{margin-bottom:3px}
+.acc-body .note{font-style:italic;color:var(--usat-gray-mid);margin-top:6px}
+.dl-btn{display:inline-block;margin-top:10px;background:var(--usat-red);color:#fff;border:none;font-family:var(--font-heading);font-size:.7rem;padding:6px 12px;border-radius:4px;cursor:pointer;letter-spacing:.5px}
+.dl-btn:hover{background:#8a0a2b}
+.pool{border:1px solid var(--usat-gray-border);border-top:none;background:#fafafa;padding:16px}
+.pool h3{font-family:var(--font-heading);color:var(--usat-blue);font-size:.95rem;margin-bottom:4px}
+.pool .hint{font-size:.78rem;color:var(--usat-gray-mid);margin-bottom:12px}
+.pool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pool .card{border:1px solid var(--usat-gray-border);border-radius:4px;background:#fff}
+.count-pill{display:inline-block;background:var(--usat-blue);color:#fff;font-size:.7rem;padding:2px 9px;border-radius:10px;margin-left:8px;vertical-align:middle}
+footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:center;font-size:.75rem;padding:16px;margin-top:30px}
+@media print{.dl-btn{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>USA TRIATHLON &nbsp;|&nbsp; ENDURANCE EXCHANGE 2027</h1>
+  <div class="sub">Where Innovation Meets Endurance &nbsp;•&nbsp; January 8–10, 2027 &nbsp;•&nbsp; Caribe Royale Orlando &nbsp;•&nbsp; Session Planning Grid</div>
+</header>
+<div class="container" id="app"></div>
+<footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
+
+<script>
+const ROOMS = ["Caribbean Ballroom IV–VI (400)","Boca I & II (85)","Boca V & VI (85)","Boca III & IV (85)"];
+const LETTERS = ["a","b","c","d"];
+const DAY_META = {"1": {"date": "Friday, January 8", "theme": "Day 1 — Innovation and Intelligence", "rows": [["7:00 – 8:00 AM", "band", "Morning Group Workout (pending approval)"], ["8:00 – 11:00 AM", "band", "Packet Pickup"], ["9:00 – 9:45 AM", "sess", 1], ["10:00 – 10:45 AM", "sess", 2], ["11:00 AM – 12:00 PM", "band", "Light Lunch — Sponsor Opportunity (only if sponsor confirmed)"], ["12:00 – 1:00 PM", "key", "Artificial Intelligence & Innovation Keynote"], ["1:00 – 1:45 PM", "sess", 3], ["2:00 – 2:45 PM", "sess", 4], ["3:00 – 3:45 PM", "band", "Networking Time — Expo Engagement"], ["4:00 – 4:45 PM", "sess", 5], ["5:00 – 5:45 PM", "sess", 6], ["6:00 – 7:00 PM", "band", "Partner Happy Hour (pending partner covers cost)"]]}, "2": {"date": "Saturday, January 9", "theme": "Day 2 — Human Connection and Community", "rows": [["7:00 – 8:00 AM", "band", "Morning Group Workout (pending approval)"], ["8:00 – 9:00 AM", "band", "Breakfast"], ["9:00 – 10:00 AM", "key", "Human Connection and Community Keynote"], ["10:00 – 10:45 AM", "sess", 7], ["11:00 – 11:45 AM", "sess", 8], ["12:00 – 1:00 PM", "band", "Lunch"], ["1:00 – 1:45 PM", "sess", 9], ["2:00 – 2:45 PM", "sess", 10], ["3:00 – 3:45 PM", "band", "Networking Break"], ["4:00 – 4:45 PM", "sess", 11], ["5:00 – 5:45 PM", "sess", 12], ["6:00 – 7:00 PM", "band", "Partner Happy Hour — Sponsor Opportunity (only if partner willing to pay)"]]}, "3": {"date": "Sunday, January 10", "theme": "Day 3 — The Road to LA2028", "rows": [["7:00 – 8:00 AM", "band", "Fun Run 5K"], ["8:00 – 9:00 AM", "band", "Breakfast"], ["9:00 – 9:45 AM", "key", "2026 State of the Sport Survey Presentation"], ["9:45 – 10:30 AM", "key", "USA Triathlon 2026 Behavioral Data and Trends"], ["10:30 – 11:30 AM", "key", "Panel Discussion: State of the Sport, Data and Trends"], ["11:30 AM – 12:30 PM", "band", "Networking Break + Lunch on own — Sponsor Opportunity (only if partner willing to pay)"], ["12:30 – 1:30 PM", "key", "Action Brainstorming — how to make material come to life"], ["1:45 – 2:30 PM", "sess", 13], ["2:45 – 3:30 PM", "sess", 14]]}};
+const SESSIONS = [
+ {
+  "day": 1,
+  "slot": "1a",
+  "title": "The Time-Smart Coach: Apps, AI, and Systems That Make You a Better Coach in Half the Hours",
+  "speaker": "Michelle Lake",
+  "org": "The Dream Programs / Fiv3 Racing",
+  "fmt": "Keynote",
+  "summary": "Most coaches lose hours to disorganization that has nothing to do with actual coaching. This keynote lays out a full framework: TrainingPeaks optimization, AI tools, communication systems, boundaries, and workout libraries that let you serve more athletes at a higher level in the hours you already have.",
+  "takeaways": [
+   "Write better training plans in half the time using TrainingPeaks libraries, templates, and AI that sharpen your coaching instead of dumbing it down.",
+   "Run a communication system that sets expectations and builds trust instead of reacting to every athlete message.",
+   "Give more consistent feedback because you have a process, not because you found more hours.",
+   "Get your plan-writing dialed and organized so it works like the business it was meant to be."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": "2a",
+  "title": "Coach Smarter: Leveraging AI for Athlete Communication, Feedback, and Data Analysis",
+  "speaker": "Julie Dunkle",
+  "org": "NYX Endurance",
+  "fmt": "Presentation",
+  "summary": "Julie pulls back the curtain on how she uses AI to handle the day-to-day work of coaching across triathlon, gravel, and ultra without losing the personal connection athletes expect. Real-world applications coaches can put to work right away, from drafting TrainingPeaks feedback to analyzing performance data.",
+  "takeaways": [
+   "Identify practical AI tools that streamline communication, feedback, and daily workflows.",
+   "Draft personalized TrainingPeaks comments, plan summaries, and athlete outreach at scale.",
+   "Interpret athlete performance data more efficiently using AI alongside existing platforms.",
+   "Keep the coach-athlete relationship authentic while automating the busywork.",
+   "Build a framework for adding AI to your practice no matter your roster size or experience."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "The Future-Proof Coach: Staying Relevant in the Age of AI",
+  "speaker": "Patty Pittman",
+  "org": "Fit2Endure Coaching",
+  "fmt": "Presentation",
+  "summary": "AI is changing coaching fast, but the future isn't about replacing coaches. Patty shares where AI genuinely helps in her own business, where it falls short, and how to fold it in without giving up the human judgment athletes value most.",
+  "takeaways": [
+   "Practical ways AI can support endurance coaches in day-to-day operations right now.",
+   "Use AI for training-data synthesis, physiology research, project planning, and gear evaluation.",
+   "Know AI's current strengths and its real limitations inside a coaching practice.",
+   "Find efficiency gains that don't cost you coaching judgment or athlete relationships.",
+   "Understand which parts of coaching stay uniquely human as the tech evolves."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Signal vs. Noise: Using AI to Go Deeper on Athlete Wearable Data",
+  "speaker": "Molly Balfe",
+  "org": "Red Arrow Endurance",
+  "fmt": "Presentation",
+  "summary": "Coaches are collecting more data than ever. This session builds a practical framework across three fronts: what wearables actually measure and where they fall short, how to use AI to interpret that data and form coaching hypotheses, and how to turn those insights into productive athlete conversations.",
+  "takeaways": [
+   "Know the data, strengths, and limits of the major consumer wearables endurance athletes use.",
+   "Use AI to interpret multi-variable athlete data and generate coaching hypotheses.",
+   "Apply a clear framework for turning data insights into individual conversations and training decisions."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "To Use or Not to Use [Technology]: That Is the Question",
+  "speaker": "Jacob Capin",
+  "org": "Marquette University / CadencePT",
+  "fmt": "Panel / Debate",
+  "summary": "A live debate where experienced coaches take opposing sides on hot topics in technology and innovation, with the audience voting for the view they agree with. A nuanced discussion follows to find the middle ground.",
+  "takeaways": [
+   "Weigh the pros and cons of various innovative technologies.",
+   "Look at the evidence for and against different tech approaches.",
+   "Decide when to use a technology based on athlete needs, goals, and the tool's limits.",
+   "Join a lively, hands-on debate with experienced coaches."
+  ],
+  "notes": "Needs at least one co-presenter; presenter offered to help identify one or moderate."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "The Psychological Impact of Performance Technology",
+  "speaker": "Rehab Hamdy",
+  "org": "Root Multisport",
+  "fmt": "Presentation",
+  "summary": "Technology has transformed training, analysis, recovery, and communication, but over-dependence on data, devices, and social media carries a cost. This session looks at both sides and how to find a healthy balance for sustainable athlete development.",
+  "takeaways": [
+   "Understand human performance in a data-driven era.",
+   "See the upside of technology in endurance sport.",
+   "Recognize data obsession, anxiety, and the illusion of precision.",
+   "Learn what technostress and orthosomnia are and how they show up.",
+   "Build body awareness so athletes don't over-rely on their devices."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Business Systems for Coaches: Using Technology to Drive Efficiency and Growth",
+  "speaker": "Alison Freeman",
+  "org": "NYX Endurance",
+  "fmt": "Presentation",
+  "summary": "Every hour spent on inefficient workflows is an hour not coaching. This session offers a tiered approach to building business systems that cut cognitive load and create room to grow, from simple reminder apps up to more sophisticated platforms.",
+  "takeaways": [
+   "Spot where systems can improve efficiency across your whole practice.",
+   "Understand how efficiency affects your effective hourly rate and capacity to grow.",
+   "Put low-tech, immediately usable fixes in place for recurring tasks and communication.",
+   "Use advanced tools to manage detailed athlete info and season planning.",
+   "Build an implementation plan that fits how you actually work."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "The Automated Scout: How Part-Time Coaches Can Use AI to Build an Acquisition Pipeline",
+  "speaker": "Rob DeClercq",
+  "org": "TRISWIMROB Endurance Edge",
+  "fmt": "Breakout",
+  "summary": "For part-time coaches, the real bottleneck isn't writing workouts, it's finding time to market and prospect around a full-time job. A working case study of using AI agents to automate top-of-funnel athlete acquisition while keeping the coach as the final human gatekeeper before anything sends.",
+  "takeaways": [
+   "A blueprint for using automation to eliminate manual social-media prospecting.",
+   "Generate hyper-targeted, context-aware outreach based on an athlete's milestones.",
+   "Scale your business in less time without losing the personal touch."
+  ],
+  "notes": "Presenter notes the system is still in development and will be ready before August 2026."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Lactate Testing Protocols and Emerging Software",
+  "speaker": "Paul Kinney",
+  "org": "Revolution Endurance",
+  "fmt": "Presentation",
+  "summary": "The basics of lactate production and how it informs training and racing intensities, plus how emerging software like INSCYD can determine VO2max, VLamax, Fatmax, thresholds, and individualized zones.",
+  "takeaways": [
+   "Understand what lactate is and how the body uses it as fuel.",
+   "Learn the main lactate testing protocols and their limitations.",
+   "Use lactate data to set an athlete's training zones.",
+   "See how specialized software builds a complete physiological profile."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Beyond Swim, Bike, Run: New Technologies in Sleep, Strength, and Heat Adaptation",
+  "speaker": "Tim Crowley",
+  "org": "TC2 Coaching",
+  "fmt": "Presentation",
+  "summary": "Triathlon performance is no longer just swim, bike, and run. The next frontier combines emerging tech with evidence-based strategies in sleep optimization, sauna and heat training, and modern strength development.",
+  "takeaways": [
+   "Use sleep tools and strategies to help athletes recover better.",
+   "Understand the science and benefits of regular sauna use in training.",
+   "Apply new strength-training technology to triathlon."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Beyond the Basics: Common Athlete Topics on Social Media and How Coaches Can Get Ahead of Them",
+  "speaker": "Brian Grasky",
+  "org": "Grasky Endurance Coaching",
+  "fmt": "Presentation",
+  "summary": "What are athletes actually thinking, and what questions are they not asking you? Social media reveals what's on their minds, from bike choice to run and swim form to nutrition to the value of coaching versus an AI plan. A look at how coaches can get ahead of it in today's AI and social landscape.",
+  "takeaways": [
+   "Understand the background behind the questions athletes ask at different levels.",
+   "Be ready for well-informed discussions on common topics.",
+   "Expand your own grasp of the tech and equipment questions athletes raise."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Stop Copying the Same Race: Creating Innovative Events",
+  "speaker": "Michael Harlow",
+  "org": "Live Red Foundation",
+  "fmt": "Presentation",
+  "summary": "Innovation and creativity are pushing the sport forward. We see it in international formats like T100 and Super League, but the same thinking works at the local level. A look at unique formats, beginner-only waves, gender competitions, and youth races that make events memorable and grow participation.",
+  "takeaways": [
+   "Leave inspired to innovate on your own event formats.",
+   "Walk away with a concrete list of ideas to make events more memorable.",
+   "Understand how creative formats can grow participation locally."
+  ],
+  "notes": "Race Director track. Harlow also submitted a coaching session (see Day Two)."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Stop Guessing, Start Testing: Turning Lab Data into Smarter Coaching Decisions",
+  "speaker": "Noel Bonk",
+  "org": "BonkWerx Endurance Sports",
+  "fmt": "Presentation",
+  "summary": "Coaches have more data than ever, yet many training zones still come from generic formulas or single metrics like FTP, pace, or heart rate. Those numbers describe what an athlete did, not the physiological cost. This session introduces lactate and VO₂max testing in practical terms and shows how to turn physiological data into individualized training decisions.",
+  "takeaways": [
+   "Tell the difference between lactate testing, VO₂max testing, field testing, and metrics like FTP, pace, and HR.",
+   "Use LT1, LT2, VT1, and VT2 to sharpen endurance, tempo, threshold, and high-intensity zones.",
+   "Understand why athletes with similar numbers may need different training.",
+   "Translate test results into practical decisions based on history, fitness, limiters, and event demands.",
+   "Know the appropriate uses and limits of testing software and automated analysis."
+  ],
+  "notes": "Presenter notes this is applied and approachable, not a product demo; LabWerx OS is used only as a practical example."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Transforming Your Athlete Swim Analysis with EO Paddles",
+  "speaker": "Peter Helling",
+  "org": "Startline Coaching",
+  "fmt": "Presentation + Optional CEU Workshop",
+  "summary": "A data-oriented approach to improving swimmer performance using EO paddles. The session covers coach and athlete benefits, how the data integrates with video analysis, performance benchmarks, and a practical framework for analysis, with hands-on case study work for coaches who want to go deeper.",
+  "takeaways": [
+   "Get introduced to swim-analysis paddle technology and what it measures.",
+   "See how the data integrates with existing video analysis.",
+   "Work with performance benchmarks across athlete types.",
+   "Take away a repeatable framework for analyzing swim data.",
+   "Optionally collaborate on case studies in a hands-on CEU workshop."
+  ],
+  "notes": "Advanced audience. Delivered in partnership with EO; an optional follow-on CEU workshop is available."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Build Your Second Company: How a Race Company Built an AI Operating System",
+  "speaker": "Jon Conkling",
+  "org": "Michigan Endurance Holdings / Tris4Health",
+  "fmt": "Presentation",
+  "summary": "Not a session about ChatGPT tips or a list of AI tools. It's the story of how a regional race company moved from casually experimenting with AI to building an AI operating system around the organization's work. It started after EE2026 with an overdue sponsorship problem, and the work contributed to more than \\$60,000 in sponsor agreements before expanding into marketing, operations, and finance.",
+  "takeaways": [
+   "Tell the difference between using an AI tool and building an AI agent with a defined job, trusted context, and a human owner.",
+   "Turn one recurring business responsibility into a supervised digital role with clear sources, workflow, quality test, and stop line.",
+   "Connect sponsorship, marketing, operations, service, and finance through shared context while keeping human decision rights.",
+   "Recognize the AI confidence trap and use source checks, opposing arguments, and human approval before acting."
+  ],
+  "notes": "Race Director track. Designed as a 40–50 minute concurrent session for race directors and endurance-industry professionals."
+ },
+ {
+  "day": 1,
+  "slot": null,
+  "title": "Developing an AI Coaching Assistant",
+  "speaker": "Carl Regenauer",
+  "org": "T3 Coaching",
+  "fmt": "Presentation",
+  "summary": "A practical look at where AI is genuinely useful for coaches right now, framed as five ways to use it like your own assistant coach: analyzing athlete performance, checking plans for errors, analyzing your own performance, drafting training plans, and doing advanced data analysis. For each, the workload, the data needed, and how to prompt for the result you want.",
+  "takeaways": [
+   "Understand the basics of using AI as a coaching assistant.",
+   "Decide which of the five AI-assisted coaching uses fit your practice.",
+   "Keep clear boundaries: you stay the head coach, and you tell athletes how AI is used.",
+   "Take reasonable steps to protect athlete data.",
+   "Remember AI won't provide empathy, so that stays with you."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Creating Raving Fans and Changed Lives",
+  "speaker": "Michael Harlow",
+  "org": "Endorphin Fitness",
+  "fmt": "Presentation",
+  "summary": "How successful coaches connect with athletes in a way that creates raving fans and genuinely changes lives.",
+  "takeaways": [
+   "Build a stronger desire and ability to connect with, motivate, and impact your athletes."
+  ],
+  "notes": "Presenter is open to presenting on other topics if there are gaps to fill."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Overhead Nobody Talks About: Emotional Labor and Coach Burnout in Endurance Sports",
+  "speaker": "Maria Simone & Jennifer Harrison",
+  "org": "No Limits / JHC Coaching",
+  "fmt": "Presentation",
+  "summary": "Endurance coaching runs on a paradox: we coach athletes toward health and sustainability while many of us work in ways that are neither. Burnout, compassion fatigue, and emotional exhaustion are widespread and almost entirely absent from coaching education. This session names the gap and offers tools, drawing on research and decades of running long-tenured coaching businesses.",
+  "takeaways": [
+   "Spot the early signs of compassion fatigue and burnout before the damage is done.",
+   "Tell healthy availability apart from unsustainable accessibility, and set boundaries that strengthen the relationship.",
+   "Treat emotional regulation as a core leadership skill, not just a personal coping habit.",
+   "Stop carrying athlete outcomes as your own without losing investment in them.",
+   "Audit your own coaching culture for grind behaviors and their downstream cost."
+  ],
+  "notes": "Co-presented; this proposal was submitted by both presenters."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Building Strong and Resilient Athletes Isn't Just Physical",
+  "speaker": "Katie Malone",
+  "org": "Malone Coaching",
+  "fmt": "Workshop",
+  "summary": "A short lecture followed by small-group practice on the relational side of coaching: asking the right questions, listening, and building skills athletes use in training, racing, and life. The same skills Katie has used to connect with hundreds of athletes.",
+  "takeaways": [
+   "Ask questions that create trust and meaningful conversation.",
+   "Listen for what athletes are really saying.",
+   "Know the difference between fixing, directing, and guiding.",
+   "Help athletes work through fear, setbacks, self-doubt, and life stress.",
+   "Recognize when an athlete needs support versus accountability."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Communication: Our Words Matter",
+  "speaker": "Jesse Vondracek",
+  "org": "Top Step Training",
+  "fmt": "Workshop",
+  "summary": "The tone behind our words, even typed ones, has a huge effect on an athlete's mindset. A hands-on look at perspective, foundational communication, effective inquiry, and what nonverbal communication means even in a platform like TrainingPeaks.",
+  "takeaways": [
+   "Concrete steps to improve communication in person, on the phone, and through TrainingPeaks."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Coaching the Human, Not Just the Training Plan: Balancing High Performance with Real Life",
+  "speaker": "Lindsay Leigh",
+  "org": "No Limits Endurance",
+  "fmt": "Presentation",
+  "summary": "Athletes bring careers, families, stress, and burnout into training every day, and those factors often shape performance more than the perfect interval set. How to support high performance while respecting the realities of athletes' lives, using stronger communication and deeper understanding.",
+  "takeaways": [
+   "Understand how life stress, careers, and emotional health affect adaptation and performance.",
+   "Coach the individual rather than rigidly following the plan.",
+   "Recognize burnout, overwhelm, and unhealthy performance pressure early.",
+   "Build communication that earns trust and long-term buy-in.",
+   "Help athletes keep their identity, confidence, and enjoyment beyond race results."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Beyond the Workout: Coaching the Complete Athlete",
+  "speaker": "Paul Plummer",
+  "org": "PXP Endurance",
+  "fmt": "Breakout",
+  "summary": "Performance is shaped by far more than volume and intensity. A holistic coaching model built around stress, mindset, recovery, lifestyle, and identity, aimed at healthier, more resilient athletes.",
+  "takeaways": [
+   "How non-training stress affects performance.",
+   "Methods to reduce burnout and build resilience.",
+   "Coaching strategies for sustainable progression.",
+   "Communication approaches for emotionally intelligent coaching.",
+   "Ways to support athletes beyond race outcomes."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Why Athletes Stay: Building Coaching Relationships That Last",
+  "speaker": "Paul Plummer",
+  "org": "PXP Endurance",
+  "fmt": "Breakout",
+  "summary": "Retention is rarely about workouts. Long-term success comes from trust, communication, emotional intelligence, and meaningful athlete experiences. A look at the systems and relationship strategies that keep athletes engaged year after year.",
+  "takeaways": [
+   "Understand why athletes leave coaching relationships.",
+   "Increase retention and engagement.",
+   "Build communication systems that improve trust.",
+   "Create athlete identity and belonging.",
+   "Coach through setbacks, burnout, and life changes."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Power of Relationship",
+  "speaker": "Jennifer Mathe",
+  "org": "Colorado Mesa University / One10",
+  "fmt": "Presentation + Panel",
+  "summary": "A presentation with a panel element, potentially bringing an athlete along, on how a trusting coach-athlete relationship and a healthy team culture shape learning, mental health, and performance.",
+  "takeaways": [
+   "The importance of communication.",
+   "The impact of team culture.",
+   "Building trust and building community."
+  ],
+  "notes": "Drawn from rebuilding the CMU tri team's culture; presenter is open to other topics if needed."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Whole Athlete Problem: Managing Cognitive, Emotional, and Physical Load",
+  "speaker": "Ted Geddis",
+  "org": "Catalyst Endurance Coaching",
+  "fmt": "Presentation",
+  "summary": "Why conflating physiological training load with total athlete bandwidth leads to underperformance and dropout, and a tiered framework for modifying training based on both objective metrics and subjective athlete data.",
+  "takeaways": [
+   "A four-tier decision framework (The Signal Framework) for your next athlete check-in.",
+   "Structured check-in questions that surface life load earlier than metrics alone.",
+   "Case-study templates illustrating each tier in a real coaching context.",
+   "Language tools for raising load concerns proactively and without judgment."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Beyond the Science: The Art of Coaching",
+  "speaker": "Tom Rice",
+  "org": "U Got This Endurance",
+  "fmt": "Presentation",
+  "summary": "Five pillars of coaching (Teamwork, Respect, Understanding, Science, Time) that all support the trust athletes need to break through. How understanding behavior styles, your own and your athletes', leads to better communication.",
+  "takeaways": [
+   "The five key pillars of coaching and why they matter.",
+   "The role of trust in the coach-athlete relationship.",
+   "How four behavior styles show up in coaching.",
+   "How to flex your style to communicate with different athletes."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Coach Like a Fighter Pilot: Brief, Train, Execute, Debrief",
+  "speaker": "Brian Grasky",
+  "org": "Grasky Endurance Coaching",
+  "fmt": "Presentation",
+  "summary": "Brief, Train, Execute, Debrief is how the world's best fighter pilots operate. Brian flew the F-16 and MQ-9 for 26 years and trained over 450 pilots. Here's how that mantra translates to coaching.",
+  "takeaways": [
+   "Adopt the fighter pilot's brief-train-execute-debrief cycle in your coaching to reach your next level of success."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Other Half of Performance: Developing an Athlete's Triathlon IQ",
+  "speaker": "Alison Freeman",
+  "org": "NYX Endurance",
+  "fmt": "Presentation",
+  "summary": "Fitness is the foundation, but an athlete's triathlon IQ, their knowledge and ability to execute and adapt, is what turns training into racing success. A framework for teaching not just what to do but why it matters, so athletes can problem-solve when things go sideways.",
+  "takeaways": [
+   "Understand how triathlon IQ drives both fitness and race-day performance.",
+   "Develop athletes who know their zones and apply them by context, not by prescription.",
+   "Build RPE as a primary, calibrated metric so athletes don't over-rely on tech.",
+   "Use the interplay of power/pace, HR, and RPE to gauge fitness and set race targets.",
+   "Build knowledge progressively and confirm understanding over time."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Unlocking the Athlete's \"Why\" Through Comprehensive Assessment",
+  "speaker": "Rob DeClercq",
+  "org": "TRISWIMROB Endurance Edge",
+  "fmt": "Breakout",
+  "summary": "True personalization starts long before data hits a spreadsheet. A multi-step assessment workflow that builds psychological trust from day one and aligns the coach's why with the athlete's why for a high-retention partnership.",
+  "takeaways": [
+   "Build an assessment that prompts athletes to analyze their own strengths and weaknesses before week one.",
+   "Run an onboarding conversation that aligns the coach's why with the athlete's why.",
+   "Use structured digital ecosystems for continuous, premium communication without drowning in admin."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Coaching Retention: Keep Athletes for Life, From Sale to Forever",
+  "speaker": "Robin Barth",
+  "org": "Rise Up Racing",
+  "fmt": "Presentation",
+  "summary": "Retention now matters more than acquisition. The strongest coaching businesses are built on relationships, trust, and an experience athletes never want to leave. Practical strategies for loyalty from the first inquiry through years of coaching, drawn from growing Rise Up Racing into a thriving community.",
+  "takeaways": [
+   "Retention starts during the first interaction, not after sign-up.",
+   "Athletes stay when they feel seen and connected beyond their metrics.",
+   "Strong onboarding and communication build long-term trust.",
+   "Community and culture are often the biggest differentiators.",
+   "Support athletes through changing life seasons, goals, and motivation."
+  ],
+  "notes": "Presenter's average athlete stays on the roster three to five years."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Creating High-Retention Coaching Environments",
+  "speaker": "Rehab Hamdy",
+  "org": "Root Multisport",
+  "fmt": "Presentation",
+  "summary": "The difference between coaches with high turnover and those who keep athletes for years. Long-term success comes down to the overall athlete experience, coaching philosophy, communication, and team culture, not just plans and results.",
+  "takeaways": [
+   "Understand what separates high-turnover from low-turnover coaching.",
+   "Know why athletes leave coaches.",
+   "Use gradual progression and individual goal planning.",
+   "Build flexibility and support for different athlete levels.",
+   "Teach athletes to support each other."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Strength Training Endurance Athletes: An Autoregulatory Approach",
+  "speaker": "Ben Kessel",
+  "org": "Priority Fitness",
+  "fmt": "Presentation",
+  "summary": "The challenge isn't whether to include strength work, it's how to fit it in without overwhelming an already demanding schedule. A practical framework for reading athlete readiness and adjusting strength intensity in real time so every session adds value without hurting recovery.",
+  "takeaways": [
+   "Explain why fixed-load strength programming is poorly suited to endurance athletes.",
+   "Select and apply autoregulatory tools like RPE, velocity-based training, and readiness monitoring.",
+   "Design a periodized annual plan that sequences strength alongside endurance so the two complement each other."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "A Systematic Approach to Strength Training for Triathletes",
+  "speaker": "Jeff Boyer",
+  "org": "Barracuda Tri / Strength2Go",
+  "fmt": "Presentation",
+  "summary": "Strength is often the first thing triathletes skip, and one of the most effective tools they miss. A phase-based strength system built to slot in alongside swim, bike, and run, covering off-season development, in-season maintenance, movement assessment, and fatigue management.",
+  "takeaways": [
+   "Movement assessment and readiness.",
+   "Phase-based strength programming across the year.",
+   "Integrating strength with endurance load.",
+   "Injury reduction, durability, and exercise selection for triathletes.",
+   "Building sustainable athlete buy-in."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Longevity Shift: Rethinking Endurance Training for Lifelong Performance",
+  "speaker": "Sergio Borges",
+  "org": "Sergio Borges X Training",
+  "fmt": "Presentation",
+  "summary": "The \"more volume equals better performance\" model often comes at the cost of mobility, strength, durability, and long-term health, especially as athletes age. Sergio makes the case for strength, mobility, stability, and movement quality as the foundation of endurance training rather than afterthoughts.",
+  "takeaways": [
+   "See the limits of the traditional endurance-first model over a long career.",
+   "Understand why strength, mobility, and movement quality are foundational.",
+   "Learn how aging affects recovery, biomechanics, and injury risk.",
+   "Integrate strength and mobility without compromising aerobic development.",
+   "Grasp \"durability\" and how it drives consistency and injury prevention."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Training Hot, Racing Cool: Evidence-Based Heat Acclimation for Triathlon Success",
+  "speaker": "Tim Crowley",
+  "org": "TC2 Coaching",
+  "fmt": "Presentation",
+  "summary": "How to apply evidence-based heat acclimation to improve safety, resilience, and race-day performance in any environment, including the physiological adaptations and the growing role of passive heat exposure like sauna and hot-water immersion.",
+  "takeaways": [
+   "Use the current science of heat training to maximize safety and performance.",
+   "Safely create and control indoor heat training sessions.",
+   "Use passive heat training to boost adaptation, recovery, and sleep."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Female Athletes: Menstrual Cycle Physiology and Performance Adaptation",
+  "speaker": "Rehab Hamdy",
+  "org": "Root Multisport",
+  "fmt": "Presentation",
+  "summary": "How the menstrual cycle's physiological changes affect training, recovery, and performance, with strategies to adapt training and nutrition across each phase to support health and high performance.",
+  "takeaways": [
+   "Understand female athlete physiology and how it differs from male.",
+   "Know the four phases of the cycle and the high-hormone luteal phase.",
+   "Apply nutritional strategies through the luteal phase.",
+   "Handle competing during menstruation.",
+   "Communicate well in female-athlete coaching."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Beyond the Hormones: Coaching Female Endurance Athletes Over 40",
+  "speaker": "Emily Kose-Grasky",
+  "org": "Worldview / Independent",
+  "fmt": "Presentation",
+  "summary": "As female athletes move into their 40s and beyond, traditional high-volume models often stop working. The evolving science of training and supporting athletes through perimenopause, menopause, and beyond, plus the mental and emotional side of coaching through biological transition.",
+  "takeaways": [
+   "How hormonal changes affect endurance training and recovery.",
+   "Optimize intensity and duration to support performance while cutting excess fatigue.",
+   "Build and preserve lean muscle through targeted strength work.",
+   "Mitigate soft-tissue injury and use recovery metrics to guide decisions.",
+   "Support hormonal health, energy availability, and motivation through transition."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "The Science of Triathlon Running Performance",
+  "speaker": "Rehab Hamdy",
+  "org": "Root Multisport",
+  "fmt": "Presentation",
+  "summary": "Why triathlon running differs from standalone running, and how athletes maintain mechanics, economy, and efficiency under fatigue after the bike. Comparing fresh-leg and off-bike testing to gauge fatigue resistance and race readiness.",
+  "takeaways": [
+   "Understand running endurance specific to triathlon.",
+   "Compare fresh-leg and off-bike run tests, and read the gap between them.",
+   "Look at metabolic cost of running and leg-spring stiffness.",
+   "Improve mechanics, durability, and off-bike performance."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "How the Triathlete Coach Can Learn to Coach Other Sports",
+  "speaker": "Dr. H.D. Gerhart",
+  "org": "Hill Pursuit",
+  "fmt": "Presentation",
+  "summary": "How endurance coaches in the triathlon community can expand their horizons and coach \"every\" athlete, from beginners to Ironman to strength, power, and military populations. Largely a physiology discussion with practical application to endurance running and other pursuits.",
+  "takeaways": [
+   "How to adapt to life stress and athlete expectations.",
+   "When to take on a new client.",
+   "Coaches are always learning, and athletes aren't guinea pigs.",
+   "The coaching process holds up regardless of the sport."
+  ],
+  "notes": "This presenter submitted two related proposals under the same title."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Coaching Women in Endurance Sports / Psychology of the Coach-Athlete Partnership",
+  "speaker": "Elizabeth Waterstraat",
+  "org": "Independent",
+  "fmt": "Presentation",
+  "summary": "Several proposed directions: coaching women across life stages, building a coaching business that produces consistent champions, and the psychology of communication, education, and the coach-athlete partnership.",
+  "takeaways": [
+   "Direction to be confirmed once a topic is selected."
+  ],
+  "notes": "Presenter offered several ideas and is open to presenting on almost anything."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "The LA2028 Effect: Build the Business That's Ready When the Wave Hits",
+  "speaker": "Michelle Lake",
+  "org": "The Dream Programs / Fiv3 Racing",
+  "fmt": "Keynote",
+  "summary": "The 2028 Games are the biggest growth moment endurance coaching has ever seen. The coaches who capture it will have their marketing, ideal-athlete clarity, digital presence, and onboarding built before the surge. The exact blueprint to build it now so you're ready to catch new athletes and keep them in the sport for life.",
+  "takeaways": [
+   "Build marketing and \"grow who you know\" systems that attract your ideal athlete now.",
+   "Get crystal clear on exactly who you want to work with.",
+   "Own your corner of the internet through SEO and GEO before 2028.",
+   "Build onboarding and community systems that absorb new athletes without quality dropping.",
+   "Develop the CEO mindset that holds the whole business together."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Marketing Momentum: How Race Directors Can Drive Early Sellouts",
+  "speaker": "Robin Barth",
+  "org": "Rise Up Racing",
+  "fmt": "Presentation",
+  "summary": "As the sport grows toward LA2028, race directors have a real opening to build stronger, more sustainable events. Practical marketing that helps a race stand out and drive early registration: storytelling, social strategy, athlete experience, partnerships, and retention long before race day.",
+  "takeaways": [
+   "Identify marketing strategies that drive early registration and long-term growth.",
+   "Use storytelling and community-building to shape athlete decisions.",
+   "Create visibility months before event day.",
+   "Treat athlete experience as central to retention and word of mouth.",
+   "Apply affordable, scalable tactics that work for races of any size."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Racing Isn't Dying, It's Evolving",
+  "speaker": "Robin Barth",
+  "org": "Rise Up Racing",
+  "fmt": "Presentation",
+  "summary": "Many directors believe participation is declining, but the reality is more nuanced: athlete expectations and habits have changed. The races thriving today are the ones adapting to athlete behavior, modern marketing, and community-driven experiences. Why some races grow while others struggle.",
+  "takeaways": [
+   "Participation isn't disappearing; athlete expectations are changing.",
+   "Community and experience now drive registration as much as the course.",
+   "Modern race marketing needs storytelling and year-round engagement.",
+   "Lowering barriers attracts first-timers and improves retention.",
+   "Smaller races thrive by leaning into authenticity and local culture."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Bringing Adult Beginners Back into Triathlon",
+  "speaker": "Justin Chester",
+  "org": "TriCoach Colorado",
+  "fmt": "Presentation",
+  "summary": "Triathlon is rebounding after COVID, but coaches may not be seeing the numbers return. The case for programs that bring adult beginners into the sport, and how more adult participation creates a pipeline for their kids and grows the sport overall.",
+  "takeaways": [
+   "A coaching and business framework for bringing beginners into triathlon."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "How to Build a Thriving, Inclusive Tri Community",
+  "speaker": "Doc Golden",
+  "org": "Empire Tri Club",
+  "fmt": "Presentation",
+  "summary": "How to build a growing, inclusive tri community, and why it's critical to the future of the sport.",
+  "takeaways": [
+   "Why community is as valuable as coaching.",
+   "What creates and strengthens community.",
+   "How to keep community inclusive for new, diverse, and advanced athletes alike, and not clicky."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Growing the Sport: Starting Youth, Collegiate, and Adult Programs",
+  "speaker": "Matthew Clancy",
+  "org": "E3",
+  "fmt": "Presentation",
+  "summary": "Getting more people interested in starting youth, collegiate, and adult programs to grow the sport.",
+  "takeaways": [
+   "Direction to be confirmed."
+  ],
+  "notes": "Topic still being finalized with the presenter."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Stronger Together: How Triathlon Club Training Benefits Athletes, Clubs, and the Sport",
+  "speaker": "Mindi Straw",
+  "org": "Give It A Tri / Santa Rosa Island Triathlon",
+  "fmt": "Presentation",
+  "summary": "Growing multisport is the future, so how do we do it? By introducing people to the sport through group training that gets them ready for race day. A look at TriGulf Coast Triathlon Club's \"Mere Mortals\" program, which gives first-time triathletes the education, training, and community support to reach their first finish line.",
+  "takeaways": [
+   "Understand why beginner-focused programs matter for growing the multisport community.",
+   "See how welcoming and supporting new athletes builds the future of the sport.",
+   "Take away a proven framework for guiding newcomers from curiosity to the finish line."
+  ],
+  "notes": "Presenter would like to co-present with her husband, Evan Malone, co-race director and longtime triathlete."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "How to Become a World Champion and Olympic Medallist Coach",
+  "speaker": "Ian O'Brien",
+  "org": "ORIGIN Performance",
+  "fmt": "Presentation",
+  "summary": "A working blueprint for pursuing and developing into an elite-level coach, from a 2021 USA Olympic Coach of the Year whose athletes have won world titles and an Olympic medal. Culture, daily training, and the logistics behind coaching at the highest level.",
+  "takeaways": [
+   "How to get started on the elite coaching path.",
+   "A pathway to follow toward the highest level.",
+   "The operating guidelines that support elite programs.",
+   "An honest look at what it actually takes."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Developing Effective Communication Skills for Coaches",
+  "speaker": "Stacy Rush",
+  "org": "USAT Level 2 Coach",
+  "fmt": "Presentation",
+  "summary": "A practical session on building the communication skills at the heart of good coaching: understanding communication styles, listening actively, giving meaningful feedback, adapting to different athletes, and handling difficult situations professionally.",
+  "takeaways": [
+   "Understand the role of communication in coaching success.",
+   "Apply active listening techniques and read nonverbal cues.",
+   "Deliver effective feedback using simple, repeatable models.",
+   "Adapt your style to different ages and personalities.",
+   "Handle difficult conversations with professionalism."
+  ],
+  "notes": "Presenter can add small-group discussion if the time slot allows."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Athlete Retention: Coaching Through Disruption When Life Gets Hard",
+  "speaker": "Rachel Sears Casanta",
+  "org": "Hypercat Racing",
+  "fmt": "Breakout",
+  "summary": "Athletes rarely leave because a training strategy failed. They leave because life happened: illness, injury, loss, burnout, and somewhere in the disruption the relationship quietly dissolved. Drawing on navigating a personal health crisis while running a remote coaching business and a bike shop, this session looks at what disruption on either side of the relationship reveals about trust, communication, and retention.",
+  "takeaways": [
+   "Spot early behavioral signals of disengagement before an athlete goes quiet.",
+   "Apply a practical framework for approaching life-disruption conversations with less avoidance.",
+   "Adapt your check-in approach to your experience level and the depth of the relationship.",
+   "Consider how to stay present, or hand off responsibly, when the crisis is the coach's own."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "The Spinal Engine: Enhancing Movement Patterns for Triathletes",
+  "speaker": "David Winton",
+  "org": "USAT L3 + Strength Coach",
+  "fmt": "Workshop / Hands-On",
+  "summary": "A lecture and hands-on movement session built for triathletes. Triathlon demands repetitive movement across three very different disciplines, and when movement gets stiff or overly linear, athletes compensate through the shoulders, hips, low back, or knees. This session uses flow rope to reconnect the spine, rib cage, pelvis, and shoulders and improve rhythm, rotation, mobility, and coordination.",
+  "takeaways": [
+   "Understand how the spinal engine drives efficient triathlon movement.",
+   "Recognize common movement limitations affecting swim, bike, and run mechanics.",
+   "See how flow rope develops rhythm, rotation, coordination, mobility, and posture.",
+   "Practice foundational flow rope patterns in a hands-on setting.",
+   "Apply flow rope drills to warm-ups, mobility work, and nervous system prep."
+  ],
+  "notes": "Presenter can run a lecture plus an optional morning hands-on flow rope session and can provide ropes."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Developing Good Humans, Not Just Good Athletes",
+  "speaker": "Theresa Roden",
+  "org": "i-tri",
+  "fmt": "Breakout",
+  "summary": "Youth sport is often framed as a pathway to performance. This session flips the lens from youth development for sport to sport for youth development. Drawing on i-tri's 17 years with middle school girls on Eastern Long Island, it introduces resilience-based, trauma-informed, brain-based coaching that builds confidence, belonging, and emotional growth through triathlon.",
+  "takeaways": [
+   "Tell the difference between sport for youth development and youth development for sport.",
+   "Understand how stress, adversity, and trauma affect the developing brain and performance.",
+   "Identify strategies that foster psychological safety, trust, belonging, and resilience.",
+   "Apply brain-based communication: intentional language, relationship-building, and nervous system regulation."
+  ],
+  "notes": "Co-presented with Alyssa Channin, Program Director at i-tri."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Cross-Discipline by Design: Building Advisory Networks",
+  "speaker": "Reggie Waller",
+  "org": "Waller Endurance Coaching",
+  "fmt": "Breakout",
+  "summary": "Endurance coaches often work in isolation, siloed by discipline and blind to practices outside their niche. This session introduces the Personal Board of Directors: a framework for building a small, cross-disciplinary network of advisors from inside the sport and well beyond it, to improve both business operations and athlete outcomes.",
+  "takeaways": [
+   "Identify the operational blind spots created by single-discipline isolation.",
+   "Apply the Personal Board of Directors framework to map and recruit three to five advisors.",
+   "Implement a simple outreach and relationship-maintenance system that replaces random networking.",
+   "Leave with a mapping worksheet and a scripted outreach approach."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "Building the Paratriathlon Pipeline: LA2028 and Beyond",
+  "speaker": "Peter Helling",
+  "org": "Startline Coaching",
+  "fmt": "Presentation (format TBD)",
+  "summary": "From the chair of the USAT Paratriathlon Development Committee, a clear look at how the paratriathlon pathway works and how coaches, clubs, and race directors can help grow it heading into the Games. Covers classification, how para racing compares to able-bodied triathlon, and the development pathway from grassroots through elite, with athlete stories along the way.",
+  "takeaways": [
+   "Understand Paralympic and paratriathlon classification.",
+   "See the similarities and differences with able-bodied triathlon.",
+   "Follow the development pathway: ADT, juniors, U23, talent ID, and elite racing.",
+   "Leave with concrete steps to get involved and create local opportunities for paratriathletes."
+  ],
+  "notes": "Format still being finalized with USAT High Performance. A chance to showcase athletes and align messaging for LA2028."
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "The Most You Can Sustain: A Slower, Efficient Path to Better Athletes and Longer Careers",
+  "speaker": "Frederic Simon",
+  "org": "Yousuli",
+  "fmt": "Presentation",
+  "summary": "Athletes rarely leave triathlon because they stopped loving it; they leave because the sport ate their lives. This session makes the case that the most an athlete can sustain, done efficiently, beats the most they can do, drawing on two decades coaching abroad and a 101-day self-supported half-Ironman streak. USAT's own State of the Sport research underlines the urgency.",
+  "takeaways": [
+   "Treat retention as the coaching business model, not a soft topic.",
+   "Use a practical framework grounded in race-results analysis and lab testing.",
+   "Find the efficiency leaks (technique, drag, fueling, race choice) that lower life-cost without lowering performance.",
+   "Coach athletes who stay a decade and become the culture of a squad rather than its turnover."
+  ],
+  "notes": ""
+ },
+ {
+  "day": 3,
+  "slot": null,
+  "title": "1% Better: The Road to Full Potential",
+  "speaker": "Chris & Nik Nikic",
+  "org": "Team Nikic",
+  "fmt": "Keynote",
+  "summary": "Chris Nikic, the first person with Down syndrome to complete a full 140.6 IRONMAN, shares an unforgettable story of perseverance, faith, and possibility. More than an endurance story, it's a reminder that extraordinary results begin with ordinary daily habits. His father and coach, Nik, then shares the proven principles behind Chris's success.",
+  "takeaways": [
+   "See how consistent 1% improvement builds habits that make the impossible possible.",
+   "Understand the \"no-quit\" mindset rooted in grit, discipline, and perseverance.",
+   "Learn how barriers, physical, intellectual, and societal, were overcome.",
+   "Hear the coaching principles Nik used, straight from the coach himself."
+  ],
+  "notes": "A marquee keynote and a strong fit for the human-connection theme, with a natural tie to growing the sport for all athletes."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Fun First, Fast Later: Developing Long-Term Youth Triathletes",
+  "speaker": "Sara McLarty",
+  "org": "Swim Like a Pro",
+  "fmt": "Presentation",
+  "summary": "Long-term youth success is about more than early results. How to build an athlete-centered environment that balances fun, skill development, team culture, and performance so young athletes stay engaged.",
+  "takeaways": [
+   "Balance fun and competition in youth programs.",
+   "Create positive team culture.",
+   "Improve communication with athletes and parents.",
+   "Introduce high-performance concepts without raising burnout risk."
+  ],
+  "notes": "Youth pipeline content supports LA2028 growth, but placed on Day Two to keep Sunday lean."
+ },
+ {
+  "day": 2,
+  "slot": null,
+  "title": "Do Sports Actually Develop Leadership? Strategies to Foster Leadership in Athletes",
+  "speaker": "Jacob Capin",
+  "org": "Marquette University",
+  "fmt": "Presentation",
+  "summary": "Despite the common assumption that sport builds leadership, the empirical research is thin. Recent peer-reviewed work shares findings on leadership in sport, explains the major theories, and offers practical strategies for developing leadership in endurance athletes and coaches.",
+  "takeaways": [
+   "Identify several leadership theories and their merits.",
+   "Review recent research evidence on leadership in athletes.",
+   "Compare the research with how popular media frames it.",
+   "Enhance the high-impact leadership practices already embedded in sport."
+  ],
+  "notes": "Leadership and human development; better suited to Day Two than the Road to LA2028 day."
+ },
+ {
+  "day": "tbd",
+  "slot": null,
+  "title": "Risk Management, Incidents, and Safety",
+  "speaker": "Kathryn Murtagh",
+  "org": "USA Triathlon",
+  "fmt": "Workshop / Panel",
+  "summary": "Preventative steps to take before a race and what to do on race day, likely run as a tabletop scenario exercise with materials sent in advance and a debrief afterward. Open to inviting the insurance broker if useful.",
+  "takeaways": [
+   "Preventative pre-race planning.",
+   "Race-day incident response.",
+   "A scenario-based tabletop exercise to work through real situations."
+  ],
+  "notes": "Race-director safety content. Doesn't map cleanly to the three coach-facing day themes; worth a dedicated RD block."
+ }
+];
+
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+function findSession(slot){ return SESSIONS.find(s=>s.slot===slot); }
+
+function cardHTML(s, idx, showSlot){
+  const badge = s.slot ? `<span class="badge">${esc(s.slot.toUpperCase())}</span>` : "";
+  return `<div class="card" id="card-${idx}">
+    ${showSlot?badge:""}
+    <div class="title" onclick="toggle(${idx})">${esc(s.title)}</div>
+    <div class="speaker"><b>${esc(s.speaker)}</b>${s.org?" · "+esc(s.org):""}</div>
+    <span class="fmt">${esc(s.fmt)}</span><br>
+    <span class="acc-toggle" onclick="toggle(${idx})">Details</span>
+    <div class="acc-body">
+      <h5>Summary</h5><p>${esc(s.summary)}</p>
+      <h5>Key Takeaways</h5><ul>${s.takeaways.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
+      ${s.notes?`<p class="note">${esc(s.notes)}</p>`:""}
+      <button class="dl-btn" onclick="downloadPDF(${idx})">DOWNLOAD PDF</button>
+    </div>
+  </div>`;
+}
+
+function toggle(idx){ document.getElementById("card-"+idx).classList.toggle("open"); }
+
+function build(){
+  let html = "";
+  for(const dayNum of ["1","2","3"]){
+    const meta = DAY_META[dayNum];
+    html += `<div class="day-block">
+      <div class="day-header"><h2>${esc(meta.date).toUpperCase()}</h2><div class="theme">${esc(meta.theme)}</div></div>
+      <div class="grid-scroll"><table class="grid">
+      <tr><th>Time</th>${ROOMS.map(r=>`<th>${esc(r)}</th>`).join("")}</tr>`;
+    for(const [time,type,label] of meta.rows){
+      html += `<tr><td class="time">${esc(time)}</td>`;
+      if(type==="band"){ html += `<td class="band" colspan="4">${esc(label)}</td>`; }
+      else if(type==="key"){ html += `<td class="keynote" colspan="4">${esc(label)}</td>`; }
+      else{
+        for(let i=0;i<4;i++){
+          const slot = label + LETTERS[i];
+          const s = findSession(slot);
+          if(s){
+            const idx = SESSIONS.indexOf(s);
+            html += `<td class="slotcell">${cardHTML(s, idx, true)}</td>`;
+          } else {
+            html += `<td class="slotcell"><div class="open-slot"><span class="badge">${slot.toUpperCase()}</span><br>Open</div></td>`;
+          }
+        }
+      }
+      html += `</tr>`;
+    }
+    html += `</table></div>`;
+    // unassigned pool for this day
+    const pool = SESSIONS.filter(s=>String(s.day)===dayNum && !s.slot);
+    if(pool.length){
+      html += `<div class="pool"><h3>Unassigned — ${esc(meta.date)}<span class="count-pill">${pool.length}</span></h3>
+      <div class="hint">Submissions proposed for this day, awaiting a slot. To assign one, add its slot number (e.g., 3a) to the title in the source document.</div>
+      <div class="pool-grid">${pool.map(s=>cardHTML(s, SESSIONS.indexOf(s), false)).join("")}</div></div>`;
+    }
+    html += `</div>`;
+  }
+  // needs-a-home pool
+  const tbd = SESSIONS.filter(s=>s.day==="tbd");
+  if(tbd.length){
+    html += `<div class="day-block"><div class="day-header"><h2>NEEDS A DELIBERATE HOME</h2><div class="theme">Doesn't map to the three coach-facing day themes</div></div>
+    <div class="pool"><div class="pool-grid">${tbd.map(s=>cardHTML(s, SESSIONS.indexOf(s), false)).join("")}</div></div></div>`;
+  }
+  document.getElementById("app").innerHTML = html;
+}
+
+function downloadPDF(idx){
+  const s = SESSIONS[idx];
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:"pt", format:"letter"});
+  const W = 612, M = 54, CW = W - M*2;
+  let y = 0;
+  // header band
+  doc.setFillColor(0,42,92); doc.rect(0,0,W,70,"F");
+  doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(13);
+  doc.text("USA TRIATHLON  |  ENDURANCE EXCHANGE 2027", M, 30);
+  doc.setFontSize(9); doc.setFont("helvetica","italic");
+  doc.text("Where Innovation Meets Endurance  •  January 8–10, 2027  •  Caribe Royale Orlando", M, 48);
+  y = 100;
+  if(s.slot){
+    doc.setFillColor(168,12,52); doc.roundedRect(M, y-14, 60, 20, 3, 3, "F");
+    doc.setTextColor(255,255,255); doc.setFontSize(10); doc.setFont("helvetica","bold");
+    doc.text("SESSION "+s.slot.toUpperCase(), M+30, y, {align:"center"});
+    y += 24;
+  }
+  doc.setTextColor(0,42,92); doc.setFont("helvetica","bold"); doc.setFontSize(15);
+  const tl = doc.splitTextToSize(s.title, CW); doc.text(tl, M, y); y += tl.length*18 + 6;
+  doc.setTextColor(26,26,26); doc.setFontSize(11);
+  doc.text(s.speaker + (s.org ? "  ·  " + s.org : ""), M, y); y += 15;
+  doc.setFont("helvetica","normal"); doc.setTextColor(74,74,74); doc.setFontSize(10);
+  doc.text("Format: " + s.fmt, M, y); y += 24;
+  doc.setTextColor(168,12,52); doc.setFont("helvetica","bold"); doc.setFontSize(11);
+  doc.text("SUMMARY", M, y); y += 14;
+  doc.setTextColor(26,26,26); doc.setFont("helvetica","normal"); doc.setFontSize(10);
+  const sl = doc.splitTextToSize(s.summary, CW); doc.text(sl, M, y); y += sl.length*13 + 14;
+  doc.setTextColor(168,12,52); doc.setFont("helvetica","bold"); doc.setFontSize(11);
+  doc.text("KEY TAKEAWAYS", M, y); y += 14;
+  doc.setTextColor(26,26,26); doc.setFont("helvetica","normal"); doc.setFontSize(10);
+  for(const t of s.takeaways){
+    const bl = doc.splitTextToSize(t, CW-14);
+    if(y + bl.length*13 > 720){ doc.addPage(); y = 60; }
+    doc.text("•", M, y); doc.text(bl, M+14, y);
+    y += bl.length*13 + 4;
+  }
+  if(s.notes){
+    y += 8;
+    if(y > 680){ doc.addPage(); y = 60; }
+    doc.setFont("helvetica","italic"); doc.setTextColor(74,74,74);
+    const nl = doc.splitTextToSize("Note: " + s.notes, CW); doc.text(nl, M, y);
+  }
+  const fname = (s.slot ? s.slot.toUpperCase()+"_" : "") + s.title.replace(/[^a-z0-9]+/gi,"_").slice(0,60) + ".pdf";
+  doc.save(fname);
+}
+
+build();
+</script>
+</body>
+</html>
