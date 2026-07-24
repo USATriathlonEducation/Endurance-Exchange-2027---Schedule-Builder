@@ -16,7 +16,10 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-body);color:var(--usat-gray-dark);background:#fff;font-size:15px}
-header{background:var(--usat-blue);color:#fff;padding:28px 24px;text-align:center}
+header{background:var(--usat-blue);color:#fff;padding:20px 28px;display:flex;align-items:center;gap:24px}
+header .logo{height:78px;width:auto;flex-shrink:0}
+header .head-text{flex:1;text-align:center;padding-right:110px}
+@media(max-width:760px){header{flex-direction:column;gap:10px}header .head-text{padding-right:0}}
 header h1{font-family:var(--font-heading);font-size:1.9rem;letter-spacing:.5px}
 header .sub{margin-top:6px;font-size:.9rem;color:rgba(255,255,255,.85);font-style:italic}
 .container{max-width:1500px;margin:0 auto;padding:24px}
@@ -71,8 +74,11 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
 </head>
 <body>
 <header>
+  <img class="logo" src="https://raw.githubusercontent.com/JustinTrolle/USAT-Images/31de75b5f22d823cd0632e8073e30a658d34e7d7/USA_Triathlon_Education_Logo_Transparent.png" alt="USA Triathlon Education">
+  <div class="head-text">
   <h1>USA TRIATHLON &nbsp;|&nbsp; ENDURANCE EXCHANGE 2027</h1>
   <div class="sub">Where Innovation Meets Endurance &nbsp;•&nbsp; January 8–10, 2027 &nbsp;•&nbsp; Caribe Royale Orlando &nbsp;•&nbsp; Session Planning Grid</div>
+  </div>
 </header>
 <div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span></div>
 <div class="container" id="app"></div>
