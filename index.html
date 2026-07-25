@@ -29,11 +29,12 @@ header .sub{margin-top:6px;font-size:.9rem;color:rgba(255,255,255,.85);font-styl
 .day-header .theme{font-size:.85rem;color:rgba(255,255,255,.9);margin-top:2px}
 .grid-scroll{overflow-x:auto;border:1px solid var(--usat-gray-border);border-top:none}
 table.grid{border-collapse:collapse;width:100%;min-width:1100px}
+table.grid tr.slotrow,table.grid tr.bandrow{height:140px}
 table.grid th{background:var(--usat-blue);color:#fff;font-family:var(--font-heading);font-weight:normal;font-size:.8rem;padding:10px 8px;border:1px solid var(--usat-gray-border)}
 table.grid td{border:1px solid var(--usat-gray-border);vertical-align:top;padding:0}
 td.time{background:var(--usat-blue-tint);color:var(--usat-blue);font-weight:bold;font-size:.8rem;text-align:center;padding:10px 6px;white-space:nowrap;width:130px;vertical-align:middle}
 td.band{background:var(--usat-gray-light);font-weight:bold;text-align:center;padding:10px;font-size:.85rem;vertical-align:middle}
-td.keynote{background:var(--usat-blue-dark);color:#fff;font-weight:bold;text-align:center;padding:12px;font-size:.9rem;vertical-align:middle;height:60px}
+td.keynote{background:var(--usat-blue-dark);color:#fff;font-weight:bold;text-align:center;padding:12px;font-size:.9rem;vertical-align:middle}
 td.slotcell{width:23%;background:#fff}
 .open-slot{padding:14px 10px;text-align:center;color:var(--usat-gray-mid);font-size:.8rem}
 .open-slot .badge{opacity:.55}
@@ -69,7 +70,26 @@ td.slotcell .card{height:100%}
 .legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--usat-gray-border);vertical-align:-2px;margin-right:5px}
 .count-pill{display:inline-block;background:var(--usat-blue);color:#fff;font-size:.7rem;padding:2px 9px;border-radius:10px;margin-left:8px;vertical-align:middle}
 footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:center;font-size:.75rem;padding:16px;margin-top:30px}
-@media print{.dl-btn{display:none}}
+.card-foot{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:8px}
+.card-foot label{font-size:.62rem;color:var(--usat-gray-mid);letter-spacing:.5px}
+.slot-sel{font-family:var(--font-body);font-size:.72rem;padding:2px 3px;border:1px solid var(--usat-gray-border);border-radius:3px;background:#fff;color:var(--usat-blue);font-weight:bold;cursor:pointer}
+.toolbar{display:flex;justify-content:center;gap:12px;margin:10px 0 0}
+.toolbar button{font-family:var(--font-heading);font-size:.72rem;letter-spacing:.5px;padding:8px 16px;border-radius:4px;border:none;cursor:pointer}
+.btn-print{background:var(--usat-red);color:#fff}
+.btn-print:hover{background:#8a0a2b}
+.btn-clear{background:#fff;color:var(--usat-blue);border:1px solid var(--usat-blue) !important}
+.btn-clear:hover{background:var(--usat-blue-tint)}
+.assign-count{text-align:center;font-size:.75rem;color:var(--usat-gray-mid);margin-top:6px}
+@media print{
+  .dl-btn,.toolbar,.assign-count,.legend,.pool,.card-foot,.acc-toggle{display:none !important}
+  .day-block{page-break-after:always}
+  header{padding:12px 20px}
+  header .logo{height:50px}
+  .grid-scroll{overflow:visible;border:1px solid var(--usat-gray-border)}
+  table.grid{min-width:0}
+  body{font-size:12px}
+  @page{size:letter landscape;margin:10mm}
+}
 </style>
 </head>
 <body>
@@ -80,6 +100,11 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
   <div class="sub">Where Innovation Meets Endurance &nbsp;•&nbsp; January 8–10, 2027 &nbsp;•&nbsp; Caribe Royale Orlando &nbsp;•&nbsp; Session Planning Grid</div>
   </div>
 </header>
+<div class="toolbar">
+  <button class="btn-print" onclick="printFinal()">&#128424; PRINT FINAL SCHEDULE</button>
+  <button class="btn-clear" onclick="clearAll()">CLEAR ALL ASSIGNMENTS</button>
+</div>
+<div class="assign-count" id="assign-count"></div>
 <div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span></div>
 <div class="container" id="app"></div>
 <footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
@@ -1106,10 +1131,82 @@ function cardHTML(s, idx, showSlot){
       ${s.notes?`<p class="note">${esc(s.notes)}</p>`:""}
       <button class="dl-btn" onclick="downloadPDF(${idx})">DOWNLOAD PDF</button>
     </div>
+    <div class="card-foot">
+      <label>SLOT</label>
+      <select class="slot-sel" onchange="pick(${idx},'num',this.value)">${numOptions(s,idx)}</select>
+      <select class="slot-sel" onchange="pick(${idx},'let',this.value)">${letOptions(s,idx)}</select>
+    </div>
   </div>`;
 }
 
 function toggle(idx){ document.getElementById("card-"+idx).classList.toggle("open"); }
+
+// pending partial selections (number without letter or vice versa)
+const pending = {};
+
+function storageSave(){
+  try{
+    const map={};
+    SESSIONS.forEach((s,i)=>{ if(s.slot) map[i]=s.slot; });
+    localStorage.setItem("ee2027_assignments", JSON.stringify(map));
+  }catch(e){}
+}
+function storageLoad(){
+  try{
+    const raw=localStorage.getItem("ee2027_assignments");
+    if(!raw) return;
+    const map=JSON.parse(raw);
+    SESSIONS.forEach((s,i)=>{ s.slot = map[i] || null; });
+  }catch(e){}
+}
+
+function numOptions(s,idx){
+  const cur = s.slot ? parseInt(s.slot) : (pending[idx]&&pending[idx].num)||"";
+  let o = `<option value="">#</option>`;
+  for(let n=1;n<=14;n++) o += `<option value="${n}" ${String(cur)===String(n)?"selected":""}>${n}</option>`;
+  return o;
+}
+function letOptions(s,idx){
+  const cur = s.slot ? s.slot.replace(/\d+/,"") : (pending[idx]&&pending[idx].let)||"";
+  let o = `<option value="">–</option>`;
+  for(const L of LETTERS) o += `<option value="${L}" ${cur===L?"selected":""}>${L}</option>`;
+  return o;
+}
+
+function pick(idx, part, val){
+  const s = SESSIONS[idx];
+  // seed pending from current assignment
+  if(!pending[idx]) pending[idx] = s.slot ? {num:String(parseInt(s.slot)), let:s.slot.replace(/\d+/,"")} : {num:"",let:""};
+  pending[idx][part==="num"?"num":"let"] = val;
+  const p = pending[idx];
+  if(p.num && p.let){
+    const slot = p.num + p.let;
+    const other = SESSIONS.find((x,i)=>x.slot===slot && i!==idx);
+    if(other){
+      if(!confirm(`Slot ${slot.toUpperCase()} is already assigned to "${other.title}". Replace it? (It will move back to the unassigned pool.)`)){
+        delete pending[idx]; build(); return;
+      }
+      other.slot = null;
+    }
+    s.slot = slot;
+    delete pending[idx];
+  } else if(!p.num && !p.let){
+    s.slot = null; delete pending[idx];
+  } else {
+    s.slot = null; // partial — hold in pending until both chosen
+  }
+  storageSave();
+  build();
+}
+
+function clearAll(){
+  if(!confirm("Clear ALL slot assignments and return every session to the unassigned pools?")) return;
+  SESSIONS.forEach(s=>s.slot=null);
+  for(const k in pending) delete pending[k];
+  storageSave(); build();
+}
+
+function printFinal(){ window.print(); }
 
 function build(){
   let html = "";
@@ -1120,7 +1217,8 @@ function build(){
       <div class="grid-scroll"><table class="grid">
       <tr><th>Time</th>${ROOMS.map(r=>`<th>${esc(r)}</th>`).join("")}</tr>`;
     for(const [time,type,label] of meta.rows){
-      html += `<tr><td class="time">${esc(time)}</td>`;
+      const rowClass = (type==="sess") ? "slotrow" : "bandrow";
+      html += `<tr class="${rowClass}"><td class="time">${esc(time)}</td>`;
       if(type==="band"){ html += `<td class="band" colspan="4">${esc(label)}</td>`; }
       else if(type==="key"){ html += `<td class="keynote" colspan="4">${esc(label)}</td>`; }
       else{
@@ -1154,6 +1252,8 @@ function build(){
     <div class="pool"><div class="pool-grid">${tbd.map(s=>cardHTML(s, SESSIONS.indexOf(s), false)).join("")}</div></div></div>`;
   }
   document.getElementById("app").innerHTML = html;
+  const n = SESSIONS.filter(s=>s.slot).length;
+  document.getElementById("assign-count").textContent = n + " of 56 slots assigned  •  " + (SESSIONS.length-n) + " sessions unassigned  •  selections are saved in this browser";
 }
 
 function downloadPDF(idx){
@@ -1204,6 +1304,7 @@ function downloadPDF(idx){
   doc.save(fname);
 }
 
+storageLoad();
 build();
 </script>
 </body>
