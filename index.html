@@ -98,8 +98,11 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
 .btn-clear{background:#fff;color:var(--usat-blue);border:1px solid var(--usat-blue) !important}
 .btn-clear:hover{background:var(--usat-blue-tint)}
 .assign-count{text-align:center;font-size:.75rem;color:var(--usat-gray-mid);margin-top:6px}
+.sync-status{text-align:center;font-size:.72rem;margin-top:3px;color:var(--usat-gray-mid)}
+.sync-status.sync-ok{color:#1B6E3C}
+.sync-status.sync-off{color:var(--usat-red)}
 @media print{
-  .dl-btn,.toolbar,.assign-count,.legend,.pool,.card-foot,.acc-toggle{display:none !important}
+  .dl-btn,.toolbar,.assign-count,.sync-status,.legend,.pool,.card-foot,.acc-toggle{display:none !important}
   .day-block{page-break-after:always}
   header{padding:12px 20px}
   header .logo{height:50px}
@@ -123,6 +126,7 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
   <button class="btn-clear" onclick="clearAll()">CLEAR ALL ASSIGNMENTS</button>
 </div>
 <div class="assign-count" id="assign-count"></div>
+<div class="sync-status" id="sync-status">Connecting to shared schedule…</div>
 <div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span><span><span class="sw" style="background:#F9E6EA"></span>Keynote submissions</span><span><span class="sw" style="background:#FDF3D7"></span>Panel discussions</span></div>
 <div class="container" id="app"></div>
 <footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
@@ -1135,6 +1139,55 @@ const SESSIONS = [
 const KEYNOTES = [];
 for(const d of ["1","2","3"]) for(const r of DAY_META[d].rows) if(r[1]==="key") KEYNOTES.push(r[2]);
 
+// ---------- Live shared sync (Supabase) ----------
+const SUPA_URL = "https://vzwpdsnxstazpfukdbak.supabase.co";
+const SUPA_KEY = "sb_publishable_boHol6--f9_CgCSq1jyaSg_OuI42zyv";
+const SUPA_ROW = SUPA_URL + "/rest/v1/ee2027_schedule?id=eq.main";
+const SUPA_HEADERS = {"apikey":SUPA_KEY,"Authorization":"Bearer "+SUPA_KEY,"Content-Type":"application/json"};
+let lastSyncTs = null;      // updated_at of the version we currently show
+let syncOK = false;
+
+function setSyncStatus(txt, ok){
+  syncOK = ok;
+  const el = document.getElementById("sync-status");
+  if(el){ el.textContent = txt; el.className = "sync-status " + (ok?"sync-ok":"sync-off"); }
+}
+
+function applyMap(map){
+  SESSIONS.forEach((s,i)=>{ s.slot = map[i] || null; });
+}
+
+async function remoteSave(){
+  const map={};
+  SESSIONS.forEach((s,i)=>{ if(s.slot) map[i]=s.slot; });
+  const ts = new Date().toISOString();
+  try{
+    const r = await fetch(SUPA_ROW, {method:"PATCH", headers:{...SUPA_HEADERS,"Prefer":"return=minimal"},
+      body: JSON.stringify({assignments:map, updated_at:ts})});
+    if(r.ok){ lastSyncTs = ts; setSyncStatus("Live sync on — saved " + new Date(ts).toLocaleTimeString(), true); }
+    else setSyncStatus("Sync error — changes saved in this browser only", false);
+  }catch(e){ setSyncStatus("Offline — changes saved in this browser only", false); }
+}
+
+async function remoteLoad(first){
+  try{
+    const r = await fetch(SUPA_ROW + "&select=assignments,updated_at", {headers:SUPA_HEADERS});
+    if(!r.ok){ setSyncStatus("Sync error — showing local copy", false); return; }
+    const rows = await r.json();
+    if(!rows.length) return;
+    const row = rows[0];
+    if(first || (row.updated_at && row.updated_at !== lastSyncTs)){
+      lastSyncTs = row.updated_at;
+      applyMap(row.assignments || {});
+      storageSave(true);   // mirror to local without re-pushing remote
+      build();
+      setSyncStatus("Live sync on — updated " + (row.updated_at? new Date(row.updated_at).toLocaleTimeString() : "just now"), true);
+    }
+  }catch(e){ setSyncStatus("Offline — showing local copy", false); }
+}
+
+function startPolling(){ setInterval(()=>remoteLoad(false), 5000); }
+
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 
 function findSession(slot){ return SESSIONS.find(s=>s.slot===slot); }
@@ -1168,12 +1221,13 @@ function toggle(idx){ document.getElementById("card-"+idx).classList.toggle("ope
 // pending partial selections (number without letter or vice versa)
 const pending = {};
 
-function storageSave(){
+function storageSave(localOnly){
   try{
     const map={};
     SESSIONS.forEach((s,i)=>{ if(s.slot) map[i]=s.slot; });
     localStorage.setItem("ee2027_assignments", JSON.stringify(map));
   }catch(e){}
+  if(!localOnly) remoteSave();
 }
 function storageLoad(){
   try{
@@ -1307,7 +1361,7 @@ function build(){
   }
   document.getElementById("app").innerHTML = html;
   const n = SESSIONS.filter(s=>s.slot).length;
-  document.getElementById("assign-count").textContent = n + " of 62 slots assigned (56 sessions + 6 keynotes)  •  " + (SESSIONS.length-n) + " sessions unassigned  •  selections are saved in this browser";
+  document.getElementById("assign-count").textContent = n + " of 62 slots assigned (56 sessions + 6 keynotes)  •  " + (SESSIONS.length-n) + " sessions unassigned  •  shared live with everyone viewing this page";
 }
 
 function downloadPDF(idx){
@@ -1360,6 +1414,7 @@ function downloadPDF(idx){
 
 storageLoad();
 build();
+remoteLoad(true).then(startPolling);
 </script>
 </body>
 </html>
