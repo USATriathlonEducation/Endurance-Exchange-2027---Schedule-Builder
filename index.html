@@ -71,6 +71,8 @@ td.slotcell .card{height:100%}
 .count-pill{display:inline-block;background:var(--usat-blue);color:#fff;font-size:.7rem;padding:2px 9px;border-radius:10px;margin-left:8px;vertical-align:middle}
 footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:center;font-size:.75rem;padding:16px;margin-top:30px}
 .card-foot{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:8px}
+.rm-btn{background:#fff;color:var(--usat-red);border:1px solid var(--usat-red);border-radius:3px;font-size:.62rem;font-weight:bold;padding:2px 7px;cursor:pointer;margin-right:auto;letter-spacing:.3px}
+.rm-btn:hover{background:var(--usat-red);color:#fff}
 .card-foot label{font-size:.62rem;color:var(--usat-gray-mid);letter-spacing:.5px}
 .slot-sel{font-family:var(--font-body);font-size:.72rem;padding:2px 3px;border:1px solid var(--usat-gray-border);border-radius:3px;background:#fff;color:var(--usat-blue);font-weight:bold;cursor:pointer}
 .toolbar{display:flex;justify-content:center;gap:12px;margin:10px 0 0}
@@ -1132,6 +1134,7 @@ function cardHTML(s, idx, showSlot){
       <button class="dl-btn" onclick="downloadPDF(${idx})">DOWNLOAD PDF</button>
     </div>
     <div class="card-foot">
+      ${s.slot?`<button class="rm-btn" onclick="unassign(${idx})" title="Remove from this slot">✕ REMOVE</button>`:""}
       <label>SLOT</label>
       <select class="slot-sel" onchange="pick(${idx},'num',this.value)">${numOptions(s,idx)}</select>
       <select class="slot-sel" onchange="pick(${idx},'let',this.value)">${letOptions(s,idx)}</select>
@@ -1197,6 +1200,12 @@ function pick(idx, part, val){
   }
   storageSave();
   build();
+}
+
+function unassign(idx){
+  SESSIONS[idx].slot = null;
+  delete pending[idx];
+  storageSave(); build();
 }
 
 function clearAll(){
