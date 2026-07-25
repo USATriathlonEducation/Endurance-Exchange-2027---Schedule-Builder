@@ -64,6 +64,22 @@ td.slotcell{width:23%;background:#fff}
 .pool .card{border:1px solid var(--usat-gray-border);border-radius:4px}
 .card.track-coach{background:#E9F0F8}
 .card.track-rd{background:#E6F3E8}
+.card.fmt-key{background:#F9E6EA}
+.card.fmt-panel{background:#FDF3D7}
+td.keynote .key-label{font-weight:bold}
+td.keynote .key-label .badge{margin-left:8px}
+td.keynote .card{background:transparent;text-align:left;font-weight:normal;max-width:980px;margin:4px auto 0}
+td.keynote .card .title{color:#fff}
+td.keynote .card .speaker{color:#C9D4E4}
+td.keynote .card .speaker b{color:#fff}
+td.keynote .card .fmt{background:rgba(255,255,255,.18);color:#fff}
+td.keynote .card .acc-toggle{color:#FFD3DD}
+td.keynote .card .acc-body{border-top-color:rgba(255,255,255,.35);color:#E6EAF0}
+td.keynote .card .acc-body h5{color:#FFD3DD}
+td.keynote .card .acc-body .note{color:#C9D4E4}
+td.keynote .card-foot label{color:#C9D4E4}
+td.keynote .rm-btn{background:transparent;color:#fff;border-color:#fff}
+td.keynote .rm-btn:hover{background:#fff;color:var(--usat-blue-dark)}
 td.slotcell{padding:0}
 td.slotcell .card{height:100%}
 .legend{display:flex;gap:18px;justify-content:center;margin:14px 0 4px;font-size:.8rem;color:var(--usat-gray-mid)}
@@ -107,7 +123,7 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
   <button class="btn-clear" onclick="clearAll()">CLEAR ALL ASSIGNMENTS</button>
 </div>
 <div class="assign-count" id="assign-count"></div>
-<div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span></div>
+<div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span><span><span class="sw" style="background:#F9E6EA"></span>Keynote submissions</span><span><span class="sw" style="background:#FDF3D7"></span>Panel discussions</span></div>
 <div class="container" id="app"></div>
 <footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
 
@@ -1115,13 +1131,18 @@ const SESSIONS = [
  }
 ];
 
+// Keynote slots k1–k6, in schedule order across the three days
+const KEYNOTES = [];
+for(const d of ["1","2","3"]) for(const r of DAY_META[d].rows) if(r[1]==="key") KEYNOTES.push(r[2]);
+
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 
 function findSession(slot){ return SESSIONS.find(s=>s.slot===slot); }
 
 function cardHTML(s, idx, showSlot){
   const badge = s.slot ? `<span class="badge">${esc(s.slot.toUpperCase())}</span>` : "";
-  return `<div class="card track-${s.track}" id="card-${idx}">
+  const fmtClass = /keynote/i.test(s.fmt||"") ? " fmt-key" : (/panel/i.test(s.fmt||"") ? " fmt-panel" : "");
+  return `<div class="card track-${s.track}${fmtClass}" id="card-${idx}">
     ${showSlot?badge:""}
     <div class="title" onclick="toggle(${idx})">${esc(s.title)}</div>
     <div class="speaker"><b>${esc(s.speaker)}</b>${s.org?" · "+esc(s.org):""}</div>
@@ -1164,22 +1185,39 @@ function storageLoad(){
 }
 
 function numOptions(s,idx){
-  const cur = s.slot ? parseInt(s.slot) : (pending[idx]&&pending[idx].num)||"";
+  const cur = s.slot ? (s.slot[0]==="k" ? s.slot : String(parseInt(s.slot))) : (pending[idx]&&pending[idx].num)||"";
   let o = `<option value="">#</option>`;
   for(let n=1;n<=14;n++) o += `<option value="${n}" ${String(cur)===String(n)?"selected":""}>${n}</option>`;
+  KEYNOTES.forEach((lab,i)=>{ const id="k"+(i+1);
+    o += `<option value="${id}" ${cur===id?"selected":""} title="${esc(lab)}">K${i+1}</option>`; });
   return o;
 }
 function letOptions(s,idx){
-  const cur = s.slot ? s.slot.replace(/\d+/,"") : (pending[idx]&&pending[idx].let)||"";
+  const isKey = (s.slot && s.slot[0]==="k") || (pending[idx] && pending[idx].num && pending[idx].num[0]==="k");
+  const cur = (s.slot && s.slot[0]!=="k") ? s.slot.replace(/\d+/,"") : (pending[idx]&&pending[idx].let)||"";
   let o = `<option value="">–</option>`;
-  for(const L of LETTERS) o += `<option value="${L}" ${cur===L?"selected":""}>${L}</option>`;
+  for(const L of LETTERS) o += `<option value="${L}" ${(!isKey&&cur===L)?"selected":""}>${L}</option>`;
   return o;
 }
 
 function pick(idx, part, val){
   const s = SESSIONS[idx];
-  // seed pending from current assignment
-  if(!pending[idx]) pending[idx] = s.slot ? {num:String(parseInt(s.slot)), let:s.slot.replace(/\d+/,"")} : {num:"",let:""};
+  // keynote slots assign directly — no room letter needed
+  if(part==="num" && val && val[0]==="k"){
+    const other = SESSIONS.find((x,i)=>x.slot===val && i!==idx);
+    if(other){
+      const kLab = KEYNOTES[parseInt(val.slice(1))-1] || val.toUpperCase();
+      if(!confirm(`${val.toUpperCase()} (${kLab}) is already assigned to "${other.title}". Replace it? (It will move back to the unassigned pool.)`)){
+        delete pending[idx]; build(); return;
+      }
+      other.slot = null;
+    }
+    s.slot = val;
+    delete pending[idx];
+    storageSave(); build(); return;
+  }
+  // seed pending from current assignment (keynote slots seed as blank — they have no letter)
+  if(!pending[idx]) pending[idx] = (s.slot && s.slot[0]!=="k") ? {num:String(parseInt(s.slot)), let:s.slot.replace(/\d+/,"")} : {num:"",let:""};
   pending[idx][part==="num"?"num":"let"] = val;
   const p = pending[idx];
   if(p.num && p.let){
@@ -1219,6 +1257,7 @@ function printFinal(){ window.print(); }
 
 function build(){
   let html = "";
+  let kCounter = 0;
   for(const dayNum of ["1","2","3"]){
     const meta = DAY_META[dayNum];
     html += `<div class="day-block">
@@ -1229,7 +1268,13 @@ function build(){
       const rowClass = (type==="sess") ? "slotrow" : "bandrow";
       html += `<tr class="${rowClass}"><td class="time">${esc(time)}</td>`;
       if(type==="band"){ html += `<td class="band" colspan="4">${esc(label)}</td>`; }
-      else if(type==="key"){ html += `<td class="keynote" colspan="4">${esc(label)}</td>`; }
+      else if(type==="key"){
+        kCounter++; const kid = "k"+kCounter;
+        const ks = findSession(kid);
+        let inner = `<div class="key-label">${esc(label)} <span class="badge">${kid.toUpperCase()}</span></div>`;
+        if(ks){ inner += cardHTML(ks, SESSIONS.indexOf(ks), false); }
+        html += `<td class="keynote" colspan="4">${inner}</td>`;
+      }
       else{
         for(let i=0;i<4;i++){
           const slot = label + LETTERS[i];
@@ -1262,7 +1307,7 @@ function build(){
   }
   document.getElementById("app").innerHTML = html;
   const n = SESSIONS.filter(s=>s.slot).length;
-  document.getElementById("assign-count").textContent = n + " of 56 slots assigned  •  " + (SESSIONS.length-n) + " sessions unassigned  •  selections are saved in this browser";
+  document.getElementById("assign-count").textContent = n + " of 62 slots assigned (56 sessions + 6 keynotes)  •  " + (SESSIONS.length-n) + " sessions unassigned  •  selections are saved in this browser";
 }
 
 function downloadPDF(idx){
