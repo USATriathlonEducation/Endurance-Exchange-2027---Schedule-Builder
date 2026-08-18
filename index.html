@@ -70,6 +70,8 @@ td.keynote .card .sp-link:hover{color:#FFD3DD;text-decoration-color:#FFD3DD}
 .card.track-rd{background:#E6F3E8}
 .card.fmt-key{background:#F9E6EA}
 .card.fmt-panel{background:#FDF3D7}
+.card.fmt-workshop{background:#F0EAF8}
+.card.fmt-breakout{background:#FDEBDC}
 td.keynote .key-label{font-weight:bold}
 td.keynote .key-label .badge{margin-left:8px}
 td.keynote .card{background:transparent;text-align:left;font-weight:normal;max-width:980px;margin:4px auto 0}
@@ -131,7 +133,7 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
 </div>
 <div class="assign-count" id="assign-count"></div>
 <div class="sync-status" id="sync-status">Connecting to shared schedule…</div>
-<div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span><span><span class="sw" style="background:#F9E6EA"></span>Keynote submissions</span><span><span class="sw" style="background:#FDF3D7"></span>Panel discussions</span></div>
+<div class="legend"><span><span class="sw" style="background:#E9F0F8"></span>Coach submissions</span><span><span class="sw" style="background:#E6F3E8"></span>Race Director submissions</span><span><span class="sw" style="background:#F9E6EA"></span>Keynote submissions</span><span><span class="sw" style="background:#FDF3D7"></span>Panel discussions</span><span><span class="sw" style="background:#F0EAF8"></span>Workshops / Hands-On</span><span><span class="sw" style="background:#FDEBDC"></span>Breakout sessions</span></div>
 <div class="container" id="app"></div>
 <footer>USA Triathlon — Endurance Exchange 2027 Session Planning Grid &nbsp;•&nbsp; Internal planning document</footer>
 
@@ -1397,7 +1399,7 @@ function findSession(slot){ return SESSIONS.find(s=>s.slot===slot); }
 
 function cardHTML(s, idx, showSlot){
   const badge = s.slot ? `<span class="badge">${esc(s.slot.toUpperCase())}</span>` : "";
-  const fmtClass = /keynote/i.test(s.fmt||"") ? " fmt-key" : (/panel/i.test(s.fmt||"") ? " fmt-panel" : "");
+  const fmtClass = /keynote/i.test(s.fmt||"") ? " fmt-key" : (/panel/i.test(s.fmt||"") ? " fmt-panel" : (/^workshop|hands.?on/i.test(s.fmt||"") ? " fmt-workshop" : (/breakout/i.test(s.fmt||"") ? " fmt-breakout" : "")));
   return `<div class="card track-${s.track}${fmtClass}" id="card-${idx}">
     ${showSlot?badge:""}
     <div class="title" onclick="toggle(${idx})">${esc(s.title)}</div>
