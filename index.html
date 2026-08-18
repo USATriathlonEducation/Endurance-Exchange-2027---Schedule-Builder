@@ -129,7 +129,6 @@ footer{background:var(--usat-blue-dark);color:rgba(255,255,255,.75);text-align:c
 </header>
 <div class="toolbar">
   <button class="btn-print" onclick="printFinal()">&#128424; PRINT FINAL SCHEDULE</button>
-  <button class="btn-clear" onclick="clearAll()">CLEAR ALL ASSIGNMENTS</button>
 </div>
 <div class="assign-count" id="assign-count"></div>
 <div class="sync-status" id="sync-status">Connecting to shared schedule…</div>
@@ -1502,13 +1501,6 @@ function pick(idx, part, val){
 function unassign(idx){
   SESSIONS[idx].slot = null;
   delete pending[idx];
-  storageSave(); build();
-}
-
-function clearAll(){
-  if(!confirm("Clear ALL slot assignments and return every session to the unassigned pools?")) return;
-  SESSIONS.forEach(s=>s.slot=null);
-  for(const k in pending) delete pending[k];
   storageSave(); build();
 }
 
